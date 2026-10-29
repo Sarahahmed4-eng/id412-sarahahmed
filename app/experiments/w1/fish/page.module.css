@@ -1,0 +1,192 @@
+.container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  /* Pale aqua at the top, warm cream towards the sand. */
+  background: linear-gradient(to bottom, #d6ece8, #eef3e6 60%, #f5eedc);
+  /* No browser scrolling or zooming by touch; the page handles the input itself. */
+  touch-action: none;
+  overscroll-behavior: none;
+  user-select: none;
+}
+
+/* Soft light from the surface. */
+.light {
+  position: absolute;
+  inset: -20% -10% auto;
+  height: 70%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.7), transparent 65%);
+  pointer-events: none;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -20px;
+  border: 1.5px solid rgba(58, 127, 134, 0.35);
+  border-radius: 50%;
+  animation: rise linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rise {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(12px, -55vh);
+  }
+  100% {
+    transform: translate(-6px, -110vh);
+    opacity: 0;
+  }
+}
+
+.floor {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 22vh;
+  pointer-events: none;
+}
+
+.weed {
+  fill: #5c9a8e;
+  opacity: 0.55;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: sway 6s ease-in-out infinite alternate;
+}
+
+.weedSlow {
+  fill: #3f7f80;
+  animation-duration: 8s;
+}
+
+@keyframes sway {
+  from {
+    transform: skewX(-6deg);
+  }
+  to {
+    transform: skewX(6deg);
+  }
+}
+
+.sand {
+  fill: #ebdfc4;
+}
+
+/* Positioned by the loop in page.tsx. This starting transform puts it in the middle before the first frame. */
+.fish {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: min(46vw, 460px);
+  transform: translate(calc(50vw - 50%), -50%);
+  will-change: transform;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 12px 14px rgba(19, 47, 66, 0.15));
+}
+
+/* All fish parts turn around points given in the 400 × 240 drawing (transform-box: view-box). */
+.body {
+  cursor: pointer;
+  transform-box: view-box;
+  transform-origin: 230px 120px;
+}
+
+.tail {
+  transform-box: view-box;
+  transform-origin: 104px 120px; /* where the tail meets the body */
+}
+
+.line {
+  fill: none;
+  stroke: #173a50;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.45;
+}
+
+.scales {
+  fill: none;
+  stroke: #d9efe9;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.35;
+}
+
+.dorsal,
+.pelvic,
+.pectoral {
+  transform-box: view-box;
+}
+
+.dorsal {
+  transform-origin: 220px 70px;
+}
+
+.pelvic {
+  transform-origin: 190px 168px;
+}
+
+.pectoral {
+  transform-origin: 274px 138px;
+}
+
+/* Added on click: four quick flaps. */
+.dorsal.flap {
+  animation: flap-dorsal 0.28s ease-in-out 4;
+}
+
+.pelvic.flap {
+  animation: flap-pelvic 0.28s ease-in-out 4;
+}
+
+.pectoral.flap {
+  animation: flap-pectoral 0.28s ease-in-out 4;
+}
+
+@keyframes flap-dorsal {
+  50% {
+    transform: scaleY(0.6) rotate(-8deg);
+  }
+}
+
+@keyframes flap-pelvic {
+  50% {
+    transform: rotate(28deg);
+  }
+}
+
+@keyframes flap-pectoral {
+  50% {
+    transform: rotate(-40deg) scale(1.1);
+  }
+}
+
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  margin: 0;
+  transform: translateX(-50%);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13px;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: #3a6670;
+  opacity: 0.7;
+  white-space: nowrap;
+  pointer-events: none;
+}
