@@ -2,44 +2,39 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  addBubbles,
-  addRipple,
+  addBubble,
+  addBurst,
   addSparkles,
-  addTrail,
   bubbleAt,
   drawBubbles,
   drawFading,
+  drawFishGlow,
   drawSpecks,
   makeSpecks,
-  updateAndDrawRipples,
   updateBubbles,
   updateFading,
   updateSpecks,
   type Bubble,
   type Particle,
-  type Ripple,
 } from "./particles";
 import { Reef } from "./Reef";
 import styles from "./page.module.css";
 
-// One large fish in a dreamy coral reef.
-// Move the mouse slowly: the fish comes to look at it from a polite distance.
-// Move it fast near the fish: it darts away. Stop: it slows down and explores on its own.
-// Click the fish: fins flap and it blows bubbles. Click a bubble: it pops into sparkles.
+// One large fish in an enchanted twilight reef.
+// Move the mouse: the fish swims after it, leaving a trail of bubbles.
+// Click the fish: its fins flap and it puffs out tiny glowing bubbles. Click a bubble: it pops.
 // Scroll up / down: the fish grows / shrinks, and the reef comes closer / fades into the distance.
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 1.8;
 const SCROLL_SPEED = 0.0015; // scale change per pixel of scrolling
 
-const FOLLOW_SPEED = 260; // px/s, top speeds in each mood
-const DART_SPEED = 720;
-const CHASE_SPEED = 240;
-const WANDER_SPEED = 110;
-const FAST_MOUSE = 1600; // px/s: a mouse faster than this, close to the fish, makes it dart away
-const IDLE_AFTER = 1400; // ms without mouse movement before the fish explores on its own
+const FOLLOW_SPEED = 340; // px/s, top speed when following the mouse
+const FOLLOW_EASE = 2.2; // how quickly it changes speed and direction (lower = lazier, more delay)
+const WANDER_SPEED = 90; // px/s, before the mouse has moved
 
-const SPECKS = 70; // floating specks in the water
-const CLICK_BUBBLES = 9; // bubbles per click on the fish
+const SPECKS = 90; // floating specks in the water
+const CLICK_BUBBLES = 12; // tiny glowing bubbles per click on the fish
+const TRAIL_BUBBLES = 35; // the most trail bubbles at once
 
 function random(min: number, max: number) {
   return min + Math.random() * (max - min);
@@ -49,13 +44,12 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-// Light rays from the surface: left position (%), width (vw), tilt (deg), delay (s).
-const RAYS = [
-  { left: 8, width: 7, tilt: 16, delay: 0 },
-  { left: 24, width: 12, tilt: 20, delay: 3 },
-  { left: 45, width: 6, tilt: 14, delay: 6 },
-  { left: 60, width: 10, tilt: 18, delay: 1.5 },
-  { left: 80, width: 8, tilt: 22, delay: 4.5 },
+// Soft coloured lights in the water: position (%), size (vmax), colour, drift duration (s).
+const ORBS = [
+  { left: 12, top: 58, size: 55, color: "rgba(140, 100, 255, 0.35)", duration: 34 },
+  { left: 82, top: 50, size: 50, color: "rgba(255, 105, 170, 0.22)", duration: 41 },
+  { left: 55, top: 85, size: 45, color: "rgba(255, 170, 90, 0.2)", duration: 29 },
+  { left: 40, top: 25, size: 40, color: "rgba(120, 255, 230, 0.18)", duration: 37 },
 ];
 
 export default function Fish() {
@@ -63,8 +57,8 @@ export default function Fish() {
   const fishRef = useRef<HTMLDivElement>(null); // the whole fish: position, size, facing, tilt
   const bodyRef = useRef<SVGGElement>(null); // a slight wiggle while swimming; clicks land here
   const tailRef = useRef<SVGGElement>(null); // the tail beat
-  const backRef = useRef<HTMLCanvasElement>(null); // specks, trail, ripples (behind the fish)
-  const frontRef = useRef<HTMLCanvasElement>(null); // bubbles, sparkles (in front)
+  const backRef = useRef<HTMLCanvasElement>(null); // specks, light, trail bubbles (behind the fish)
+  const frontRef = useRef<HTMLCanvasElement>(null); // click and reef bubbles, sparkles (in front)
   const farRef = useRef<HTMLDivElement>(null); // reef layers, moved for parallax
   const midRef = useRef<HTMLDivElement>(null);
   const nearRef = useRef<HTMLDivElement>(null);
@@ -112,41 +106,32 @@ export default function Fish() {
     let targetScale = 1;
     let phase = 0; // tail beat
     let bob = 0; // gentle up and down, px
-
-    // Its moods: darting away, chasing a bubble, wandering.
-    let dartUntil = 0;
-    let dartCooldown = 0;
-    const dartTarget = { x: 0, y: 0 };
-    let chase: Bubble | null = null;
-    let chaseUntil = 0;
-    let chaseCooldown = 0;
+    let flapUntil = 0; // after a click: an extra happy wiggle until this time
     const wanderTarget = { x: pos.x, y: pos.y };
     let wanderNext = 0;
 
-    // The mouse (or finger). Its speed (px/s) is measured once per frame in draw().
-    const pointer = { x: width / 2, y: height / 2, speed: 0, lastMove: -Infinity };
-    const pointerBefore = { x: pointer.x, y: pointer.y }; // where it was on the previous frame
+    // The mouse (or finger). Until it first moves, the fish wanders on its own.
+    const pointer = { x: width / 2, y: height / 2, moved: false };
 
     // Everything small in the water (see particles.ts).
-    const specks = makeSpecks(reduced ? 30 : SPECKS, width, height);
-    const trail: Particle[] = [];
+    const specks = makeSpecks(reduced ? 35 : SPECKS, width, height);
+    const trail: Bubble[] = []; // behind the fish
+    const bubbles: Bubble[] = []; // in front: clicks and the reef
     const sparks: Particle[] = [];
-    const bubbles: Bubble[] = [];
-    const ripples: Ripple[] = [];
-    let rippleTimer = 0;
-    let ambientTimer = 0;
+    let trailTimer = 0;
+    let reefTimer = 1;
 
     const parallax = { x: 0, y: 0 };
     let frameCount = 0;
     let last = performance.now();
     let frame = 0;
 
-    // Where the fish may go: away from the edges, and closer to the middle the bigger it is.
+    // Where the fish may go: inside the scene, and closer to the middle the bigger it is.
     function keepInside(target: { x: number; y: number }) {
       const w = baseWidth * scale;
-      const minX = Math.max(width * 0.12, w * 0.4);
-      const minY = Math.max(height * 0.22, w * 0.3 + 16);
-      const maxY = Math.min(height * 0.66, height - w * 0.3 - 16);
+      const minX = Math.max(width * 0.06, w * 0.5 + 8); // the whole fish, tail to nose, stays on screen
+      const minY = Math.max(height * 0.14, w * 0.3 + 16);
+      const maxY = Math.min(height * 0.8, height - w * 0.3 - 16);
       return {
         x: minX < width - minX ? clamp(target.x, minX, width - minX) : width / 2,
         y: minY < maxY ? clamp(target.y, minY, maxY) : height / 2,
@@ -160,34 +145,26 @@ export default function Fish() {
       return { x: pos.x + offset * Math.cos(angle), y: pos.y + bob + offset * Math.sin(angle) };
     }
 
-    function pop(index: number) {
-      const bubble = bubbles[index];
-      addSparkles(sparks, bubble.x, bubble.y, reduced ? 5 : 12);
-      bubbles.splice(index, 1);
-      if (chase === bubble) chase = null;
-    }
-
     function onPointerMove(event: PointerEvent) {
       pointer.x = event.clientX;
       pointer.y = event.clientY;
-      pointer.lastMove = performance.now();
+      pointer.moved = true;
     }
     window.addEventListener("pointermove", onPointerMove);
 
-    // A click (or tap) pops a bubble if there is one under it; otherwise, on the fish, it flaps and blows bubbles.
+    // A click (or tap) pops a bubble if there is one under it; otherwise, on the fish, it flaps.
+    // It also counts as a pointer position, so the fish keeps following.
     function onPointerDown(event: PointerEvent) {
-      pointer.x = pointerBefore.x = event.clientX; // a tap jumps there, it is not a fast movement
-      pointer.y = pointerBefore.y = event.clientY;
-      pointer.lastMove = performance.now();
+      onPointerMove(event);
       const hit = bubbleAt(bubbles, event.clientX, event.clientY);
       if (hit >= 0) {
-        pop(hit);
+        addSparkles(sparks, bubbles[hit].x, bubbles[hit].y, reduced ? 5 : 12);
+        bubbles.splice(hit, 1);
       } else if (body.contains(event.target as Node)) {
         setFlaps((n) => n + 1);
-        const mouth = onFish(0.42);
-        addBubbles(bubbles, mouth.x, mouth.y, reduced ? 4 : CLICK_BUBBLES, true);
-        addSparkles(sparks, mouth.x, mouth.y, reduced ? 3 : 8);
-        chaseCooldown = performance.now() + 1500; // let the new bubbles rise a little before chasing them
+        flapUntil = performance.now() + 1400;
+        const mouth = onFish(0.44);
+        addBurst(bubbles, mouth.x, mouth.y, reduced ? 4 : CLICK_BUBBLES);
       }
     }
     window.addEventListener("pointerdown", onPointerDown);
@@ -205,88 +182,39 @@ export default function Fish() {
       last = now;
       frameCount++;
 
-      scale += (targetScale - scale) * (1 - Math.exp(-dt * 8));
+      scale += (targetScale - scale) * (1 - Math.exp(-dt * 6));
       const w = baseWidth * scale;
-      // Mouse speed: distance since the last frame, smoothed over a few frames.
-      const pointerSpeed = Math.hypot(pointer.x - pointerBefore.x, pointer.y - pointerBefore.y) / Math.max(dt, 0.001);
-      pointer.speed += (pointerSpeed - pointer.speed) * (1 - Math.exp(-dt * 12));
-      Object.assign(pointerBefore, { x: pointer.x, y: pointer.y });
-      const idle = now - pointer.lastMove > IDLE_AFTER;
-      const toPointer = Math.hypot(pointer.x - pos.x, pointer.y - pos.y) || 1;
 
-      // 1. Choose a target and a top speed, depending on the mood.
+      // 1. Target: the mouse, with the fish's mouth (not its middle) heading for it.
+      //    Before the mouse has moved, a calm spot nearby.
       let target = wanderTarget;
       let maxSpeed = WANDER_SPEED;
-      let steer = 1.5; // how quickly the fish changes its speed and direction
-      if (!idle && now > dartCooldown && pointer.speed > FAST_MOUSE && toPointer < 360 + w / 2) {
-        // Startled: dart away from the mouse.
-        const away = 240 + w * 0.4;
-        Object.assign(dartTarget, keepInside({ x: pos.x + ((pos.x - pointer.x) / toPointer) * away, y: pos.y + ((pos.y - pointer.y) / toPointer) * away * 0.6 }));
-        dartUntil = now + 900;
-        dartCooldown = now + 2200;
-        chase = null;
-      }
-      if (now < dartUntil) {
-        target = dartTarget;
-        maxSpeed = DART_SPEED;
-        steer = 6;
-      } else {
-        // Playful: chase a bubble near its mouth, now and then.
-        const mouth = onFish(0.42);
-        if (!chase && now > chaseCooldown) {
-          const near = bubbles.filter((b) => Math.hypot(b.x - mouth.x, b.y - mouth.y) < 260);
-          if (near.length) {
-            chase = near[Math.floor(Math.random() * near.length)];
-            chaseUntil = now + 1600;
-          }
-        }
-        if (chase && (now > chaseUntil || !bubbles.includes(chase))) {
-          chase = null;
-          chaseCooldown = now + 1500;
-        }
-        if (chase) {
-          const side = Math.sign(chase.x - pos.x) || direction;
-          target = { x: chase.x - side * w * 0.42, y: chase.y };
-          maxSpeed = CHASE_SPEED;
-          steer = 4;
-          if (Math.hypot(mouth.x - chase.x, mouth.y - chase.y) < chase.r + 14 * scale) {
-            pop(bubbles.indexOf(chase));
-            chaseCooldown = now + 1500;
-          }
-        } else if (!idle) {
-          // Curious: stay a comfortable distance from the mouse, on the side the fish is already on.
-          const comfort = 120 + w * 0.55;
-          target = { x: pointer.x + ((pos.x - pointer.x) / toPointer) * comfort, y: pointer.y + ((pos.y - pointer.y) / toPointer) * comfort };
-          maxSpeed = FOLLOW_SPEED;
-          steer = 2.5;
-        } else if (now > wanderNext || Math.hypot(wanderTarget.x - pos.x, wanderTarget.y - pos.y) < 30) {
-          // Idle: explore a spot nearby, drifting a little towards the middle so it stays easy to see.
-          Object.assign(wanderTarget, keepInside({
-            x: pos.x + (width / 2 - pos.x) * 0.3 + random(-200, 200),
-            y: pos.y + (height / 2 - pos.y) * 0.3 + random(-70, 70),
-          }));
-          wanderNext = now + random(2500, 4500);
-        }
+      if (pointer.moved) {
+        target = { x: pointer.x - direction * w * 0.32, y: pointer.y };
+        maxSpeed = FOLLOW_SPEED;
+      } else if (now > wanderNext) {
+        Object.assign(wanderTarget, { x: width / 2 + random(-0.25, 0.25) * width, y: height * random(0.35, 0.55) });
+        wanderNext = now + random(3000, 5000);
       }
       if (reduced) maxSpeed *= 0.6;
       target = keepInside(target);
 
       // 2. Steer: ease the velocity towards "straight at the target", slowing down on arrival.
+      //    The easing is the slight delay that makes it feel like it is following your hand.
       const dx = target.x - pos.x;
       const dy = target.y - pos.y;
       const distance = Math.hypot(dx, dy) || 1;
       const wanted = Math.min(maxSpeed, distance * 2);
       const previousVx = vel.x;
-      vel.x += ((dx / distance) * wanted - vel.x) * (1 - Math.exp(-dt * steer));
-      vel.y += ((dy / distance) * wanted - vel.y) * (1 - Math.exp(-dt * steer));
+      vel.x += ((dx / distance) * wanted - vel.x) * (1 - Math.exp(-dt * FOLLOW_EASE));
+      vel.y += ((dy / distance) * wanted - vel.y) * (1 - Math.exp(-dt * FOLLOW_EASE));
       Object.assign(pos, keepInside({ x: pos.x + vel.x * dt, y: pos.y + vel.y * dt }));
       const speed = Math.hypot(vel.x, vel.y);
       const effort = Math.min(speed / 400, 1); // 0 = resting, 1 = full speed
 
-      // 3. Face the way it swims; when hovering near the mouse, turn to look at it.
-      if (vel.x > 30) direction = 1;
-      else if (vel.x < -30) direction = -1;
-      else if (!idle && !chase && speed < 40 && Math.abs(pointer.x - pos.x) > 20) direction = pointer.x > pos.x ? 1 : -1;
+      // 3. Face the way it swims (with a margin, so small mouse moves do not make it flip back and forth).
+      if (vel.x > 40) direction = 1;
+      else if (vel.x < -40) direction = -1;
       facing += (direction - facing) * (1 - Math.exp(-dt * 5));
 
       // Nose follows the vertical direction, and lifts a little when speeding up.
@@ -294,21 +222,23 @@ export default function Fish() {
       const wantedTilt = clamp((Math.atan2(vel.y, Math.abs(vel.x) + 80) * 180) / Math.PI, -15, 15) - clamp(forwardAccel / 1500, -1, 1) * 4;
       tilt += (wantedTilt - tilt) * (1 - Math.exp(-dt * 4));
 
-      // The tail beats faster and wider the faster the fish swims; the body follows a little behind.
-      phase += dt * (3 + effort * 10) * (reduced ? 0.6 : 1);
-      tail.style.transform = `rotate(${Math.sin(phase) * (8 + effort * 22)}deg)`;
-      body.style.transform = `rotate(${Math.sin(phase - 0.8) * (1 + effort * 3)}deg)`;
+      // Tail beats faster and wider the faster it swims; the body follows a little behind.
+      // After a click, an extra quick wiggle that fades out.
+      const happy = Math.max(0, (flapUntil - now) / 1400);
+      phase += dt * (3 + effort * 10 + happy * 8) * (reduced ? 0.6 : 1);
+      tail.style.transform = `rotate(${Math.sin(phase) * (8 + effort * 22 + happy * 14)}deg)`;
+      body.style.transform = `rotate(${Math.sin(phase - 0.8) * (1 + effort * 3 + happy * 3)}deg)`;
       bob = Math.sin(now / 900) * 8 * (1 - effort * 0.5);
       fish.style.transform = `translate(${pos.x}px, ${pos.y + bob}px) translate(-50%, -50%) scale(${scale}) rotate(${tilt * facing}deg) scaleX(${facing})`;
 
       // 4. The reef: parallax with the mouse, closer and clearer when the fish is big.
       const near = (scale - MIN_SCALE) / (MAX_SCALE - MIN_SCALE); // 0 = far away, 1 = close up
-      parallax.x += (pointer.x / width - 0.5 - parallax.x) * (1 - Math.exp(-dt * 3));
-      parallax.y += (pointer.y / height - 0.5 - parallax.y) * (1 - Math.exp(-dt * 3));
-      farRef.current!.style.transform = `translate(${-parallax.x * 12}px, ${-parallax.y * 6}px) scale(${1 + near * 0.04})`;
-      midRef.current!.style.transform = `translate(${-parallax.x * 26}px, ${-parallax.y * 10}px) scale(${1 + near * 0.08})`;
-      nearRef.current!.style.transform = `translate(${-parallax.x * 48}px, ${-parallax.y * 14}px) scale(${1 + near * 0.14})`;
-      hazeRef.current!.style.opacity = String(0.6 - near * 0.5);
+      parallax.x += (pointer.x / width - 0.5 - parallax.x) * (1 - Math.exp(-dt * 2));
+      parallax.y += (pointer.y / height - 0.5 - parallax.y) * (1 - Math.exp(-dt * 2));
+      farRef.current!.style.transform = `translate(${-parallax.x * 10}px, ${-parallax.y * 5}px) scale(${1 + near * 0.04})`;
+      midRef.current!.style.transform = `translate(${-parallax.x * 24}px, ${-parallax.y * 9}px) scale(${1 + near * 0.08})`;
+      nearRef.current!.style.transform = `translate(${-parallax.x * 46}px, ${-parallax.y * 14}px) scale(${1 + near * 0.14})`;
+      hazeRef.current!.style.opacity = String(0.85 - near * 0.55);
 
       // Front coral close to the fish lights up (checked every 6 frames; CSS fades it).
       if (frameCount % 6 === 0) {
@@ -319,30 +249,40 @@ export default function Fish() {
         }
       }
 
-      // 5. Particles: a bubble now and then from the reef, a trail and ripples behind the swimming fish.
-      ambientTimer -= dt;
-      if (ambientTimer <= 0) {
-        addBubbles(bubbles, random(0.05, 0.95) * width, height + 10, 1, false);
-        ambientTimer = random(1.2, 2.4) * (reduced ? 3 : 1);
+      // 5. Bubbles. The trail comes from behind the gills: more when swimming, a few when resting.
+      trailTimer -= dt;
+      if (trailTimer <= 0 && trail.length < TRAIL_BUBBLES) {
+        const from = onFish(random(-0.1, 0.12));
+        addBubble(trail, {
+          x: from.x + random(-0.05, 0.05) * w,
+          y: from.y + random(-0.06, 0.04) * w,
+          r: random(2.5, 6.5) * Math.sqrt(scale),
+          life: random(1.6, 3.2),
+          vx: -vel.x * 0.25 + random(-12, 12),
+          vy: -vel.y * 0.25 - random(5, 25),
+        });
+        trailTimer = (reduced ? 0.6 : 0.28 - effort * 0.2) * random(0.7, 1.3);
       }
-      if (!reduced && effort > 0.12) {
-        const tailEnd = onFish(-0.42);
-        addTrail(trail, tailEnd.x, tailEnd.y, vel.x, vel.y);
+      // Now and then, a small group of bubbles rises from the reef.
+      reefTimer -= dt;
+      if (reefTimer <= 0) {
+        const x = random(0.08, 0.92) * width;
+        const y = height * random(0.85, 0.95);
+        const count = Math.floor(random(3, 7));
+        for (let i = 0; i < count; i++) addBubble(bubbles, { x: x + random(-8, 8), y: y + i * random(10, 22), r: random(1.5, 4.5), life: random(9, 14) });
+        reefTimer = random(2.5, 5) * (reduced ? 2 : 1);
       }
-      rippleTimer -= dt;
-      if (!reduced && speed > 70 && rippleTimer <= 0) {
-        addRipple(ripples, pos.x, pos.y + bob, w * 0.35);
-        rippleTimer = 0.45;
-      }
-      updateSpecks(specks, dt, width, height, { x: pos.x, y: pos.y, vx: vel.x, vy: vel.y, radius: w * 0.6 + 60 });
-      updateFading(trail, dt);
+
+      const wake = { x: pos.x, y: pos.y, vx: vel.x, vy: vel.y, radius: w * 0.6 + 50 };
+      updateSpecks(specks, dt, width, height, wake);
+      updateBubbles(trail, dt, wake);
+      updateBubbles(bubbles, dt, wake);
       updateFading(sparks, dt);
-      updateBubbles(bubbles, dt);
 
       backCtx.clearRect(0, 0, width, height);
-      drawSpecks(backCtx, specks);
-      updateAndDrawRipples(backCtx, ripples, dt);
-      drawFading(backCtx, trail);
+      drawFishGlow(backCtx, pos.x, pos.y + bob, w * 0.9, 0.16 + effort * 0.1 + happy * 0.12, now / 1000);
+      drawSpecks(backCtx, specks, -parallax.x * 30, -parallax.y * 12);
+      drawBubbles(backCtx, trail, now / 1000);
       frontCtx.clearRect(0, 0, width, height);
       drawBubbles(frontCtx, bubbles, now / 1000);
       drawFading(frontCtx, sparks);
@@ -365,20 +305,45 @@ export default function Fish() {
 
   return (
     <main ref={containerRef} className={styles.container}>
-      <div className={styles.rays}>
-        {RAYS.map((ray, i) => (
-          <span
-            key={i}
-            className={styles.ray}
-            style={{ left: `${ray.left}%`, width: `${ray.width}vw`, rotate: `${ray.tilt}deg`, animationDelay: `${-ray.delay}s` }}
-          />
-        ))}
-      </div>
-      <div className={styles.caustics} />
+      {ORBS.map((orb, i) => (
+        <div
+          key={i}
+          className={styles.orb}
+          style={{
+            left: `${orb.left}%`,
+            top: `${orb.top}%`,
+            width: `${orb.size}vmax`,
+            height: `${orb.size}vmax`,
+            background: `radial-gradient(circle, ${orb.color}, transparent 65%)`,
+            animationDuration: `${orb.duration}s`,
+          }}
+        />
+      ))}
+
+      {/* Sunbeams fanning down from the surface, and two slowly sliding layers of caustic light.
+          The caustics are SVG noise turned into thin bright lines; they are drawn once and only moved. */}
+      <div className={styles.beams} />
+      <div className={`${styles.beams} ${styles.beamsSlow}`} />
+      <svg className={styles.caustics} aria-hidden="true">
+        <filter id="caustic-a" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="turbulence" baseFrequency="0.011 0.017" numOctaves="2" seed="4" />
+          <feColorMatrix values="0 0 0 0 1  0 0 0 0 0.97  0 0 0 0 0.86  -7 0 0 0 1.25" />
+          <feGaussianBlur stdDeviation="1.2" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#caustic-a)" />
+      </svg>
+      <svg className={`${styles.caustics} ${styles.causticsSlow}`} aria-hidden="true">
+        <filter id="caustic-b" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="turbulence" baseFrequency="0.008 0.013" numOctaves="2" seed="11" />
+          <feColorMatrix values="0 0 0 0 0.75  0 0 0 0 1  0 0 0 0 0.95  -7 0 0 0 1.2" />
+          <feGaussianBlur stdDeviation="1.6" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#caustic-b)" />
+      </svg>
 
       <Reef farRef={farRef} midRef={midRef} frontRef={nearRef}>
         <div ref={hazeRef} className={styles.haze} />
-        <canvas ref={backRef} className={styles.canvas} />
+        <canvas ref={backRef} className={`${styles.canvas} ${styles.light}`} />
       </Reef>
 
       <div ref={fishRef} className={styles.fish}>
@@ -429,7 +394,7 @@ export default function Fish() {
 
       <canvas ref={frontRef} className={styles.canvas} />
 
-      <p className={styles.hint}>move slowly or quickly · click the fish · click a bubble · scroll</p>
+      <p className={styles.hint}>move the mouse · click the fish · scroll</p>
     </main>
   );
 }

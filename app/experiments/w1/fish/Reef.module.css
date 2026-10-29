@@ -11,7 +11,7 @@
 }
 
 .far {
-  opacity: 0.75;
+  opacity: 0.6;
 }
 
 .ridge {
@@ -19,19 +19,41 @@
   left: 0;
   bottom: 0;
   width: 100%;
-  height: 26vh;
+  height: 30vh;
 }
 
 .mid {
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
-.sand {
+/* The dark rocky floor along the very bottom. */
+.floor {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
   height: 7vh;
+}
+
+/* Holds the shared gradients; takes no space. */
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* Glowing dots on the coral, twinkling slowly. */
+.spark {
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* One coral or plant. Width follows from its height and viewBox. */
@@ -46,7 +68,7 @@
 
 /* Set by page.tsx while the fish is close. */
 .piece[data-lit] {
-  filter: brightness(1.2) saturate(1.25) drop-shadow(0 0 12px rgba(255, 240, 200, 0.8));
+  filter: brightness(1.25) saturate(1.2) drop-shadow(0 0 14px rgba(190, 255, 240, 0.55));
 }
 
 @keyframes sway {
@@ -85,7 +107,8 @@
 @media (prefers-reduced-motion: reduce) {
   .piece,
   .blade,
-  .tentacles {
+  .tentacles,
+  .spark {
     animation: none;
   }
 }
