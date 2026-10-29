@@ -1,0 +1,27 @@
+.button {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 3;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--fg);
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.button:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.visible {
+  opacity: 1;
+  pointer-events: auto;
+}

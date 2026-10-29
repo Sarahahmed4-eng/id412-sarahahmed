@@ -1,0 +1,12 @@
+.container {
+  position: fixed;
+  inset: 0;
+  background: #6f8e94;
+  cursor: none;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

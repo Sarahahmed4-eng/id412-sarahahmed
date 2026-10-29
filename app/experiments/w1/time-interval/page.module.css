@@ -1,0 +1,149 @@
+.container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+}
+
+.grid {
+  display: grid;
+  /* minmax(0, 1fr): equal tracks that never grow to fit what is inside (the captcha images are bigger). */
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+  gap: 2vmin;
+  width: 80vmin;
+  height: 80vmin;
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 4vmin;
+  line-height: 1;
+  /* Neon: a bright core colour plus three glows, from tight to wide.
+     The variables are set from the panel in page.tsx. */
+  color: var(--core-color);
+  text-shadow:
+    0 0 calc(var(--glow-size) * 0.12) var(--glow-color),
+    0 0 calc(var(--glow-size) * 0.4) var(--glow-color),
+    0 0 var(--glow-size) var(--glow-color);
+}
+
+/* Roman numerals are wider (VIII), so they use a narrower serif font. */
+.roman .cell {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 3vmin;
+}
+
+/* Captcha: a canvas larger than the cell, so its glow can spread past the edges like the text glow. */
+.captcha {
+  width: 12vmin;
+  height: 12vmin;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.panel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  color: white;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.controls label {
+  display: grid;
+  grid-template-columns: 40px 90px 64px;
+  align-items: center;
+  gap: 8px;
+}
+
+.controls input[type="color"] {
+  width: 90px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.option {
+  display: grid;
+  grid-template-columns: 64px 90px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font: inherit;
+  color: #888;
+  text-align: left;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.option:hover,
+.selected {
+  color: white;
+}
+
+.selected {
+  border-color: #555;
+}
+
+.sample {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  color: var(--core-color);
+}
+
+.sample .captcha {
+  width: 48px;
+  height: 48px;
+}
+
+.toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: #888;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid #333;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.toggle:hover,
+.active {
+  color: white;
+  border-color: #777;
+}

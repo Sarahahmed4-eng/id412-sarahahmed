@@ -1,0 +1,24 @@
+.container {
+  position: fixed;
+  inset: 0;
+  background: white;
+}
+
+/* contain: the whole mango is visible, never cropped */
+.image {
+  object-fit: contain;
+}
+
+.credit {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  margin: 0;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  color: #888;
+}
+
+.credit a {
+  color: inherit;
+}

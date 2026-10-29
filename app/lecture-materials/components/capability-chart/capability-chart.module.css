@@ -1,0 +1,87 @@
+.figure {
+  margin: 1.5rem 0 2rem;
+}
+
+.caption {
+  margin-bottom: 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+
+.caption strong {
+  color: var(--fg);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--font-sans);
+}
+
+.grid {
+  stroke: var(--rule-soft);
+  stroke-width: 1;
+}
+
+.axis {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.tickY,
+.tickX {
+  fill: var(--muted);
+  font-size: 12px;
+}
+
+.tickY {
+  text-anchor: end;
+  dominant-baseline: middle;
+}
+
+.tickX {
+  text-anchor: middle;
+}
+
+.line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.dot {
+  fill: var(--accent);
+  stroke: var(--bg);
+  stroke-width: 2;
+  transition: r 0.1s;
+}
+
+.hit {
+  fill: transparent;
+  cursor: default;
+  outline: none;
+}
+
+.tipBox {
+  fill: var(--bg);
+  stroke: var(--rule);
+}
+
+.tipTitle {
+  fill: var(--fg);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tipText {
+  fill: var(--muted);
+  font-size: 11px;
+}
+
+.source {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}

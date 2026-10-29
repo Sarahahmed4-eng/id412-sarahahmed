@@ -1,0 +1,540 @@
+import { Term } from "@/app/lecture-materials/components/term/term";
+import { ImageRow } from "@/app/lecture-materials/components/image-row/image-row";
+import { StackDiagram } from "@/app/lecture-materials/components/stack-diagram/stack-diagram";
+
+# W1
+
+Week 1. Introduction to Creative Web Dev.
+
+## 1. AI Agents: VS Code + Claude Code [#1-vs-code--claude-code-setup]
+
+<ImageRow
+  logos
+  items={[
+    { src: "/lecture-materials/w1/logo-vscode.svg", alt: "VS Code", caption: "VS Code", href: "https://code.visualstudio.com/" },
+    { src: "/lecture-materials/w1/logo-typescript.svg", alt: "TypeScript", caption: "TypeScript", href: "https://www.typescriptlang.org/" },
+  ]}
+/>
+
+1. <Term id="vscode" /> (Visual Studio Code) = Your Editor (Where you code)
+2. <Term id="claudeCode" /> = Your Coding Agent (Who codes with you)
+   - Alternatives: [OpenAI Codex](https://chatgpt.com/codex), [Gemini CLI](https://github.com/google-gemini/gemini-cli), [Cursor AI](https://cursor.com/), [GitHub Copilot](https://github.com/features/copilot)
+3. Install: Claude Code <Term id="cli">CLI</Term> + the Claude Code extension in VS Code (step by step in [Prelim §5](/lecture-materials/prelim#5-how-to-use-ai-agents))
+4. Open your project folder in VS Code, open the terminal, type `claude`
+5. Models (platform.claude.com pricing, per 1M tokens)
+   1. Claude Fable 5.1: input $10 / output $50
+   2. Claude Opus 5.5: input $4 / output $20
+   3. We'll use Opus 5.5 in class due to cost. Type `/model` inside Claude Code to switch
+6. <Term id="harness">Harness</Term>: <Term id="agentsMd" /> + `docs/` + a README per experiment + typecheck + commit. Below
+7. Browser: `/chrome` on, so the agent opens localhost:3000 and checks its own work. Below
+8. <Term id="git" /> as your checkpoint
+   1. `git diff`: What did the agent change?
+   2. `git restore .`: Throw away what the agent changed
+   3. `git add .` + `git commit -m "..."`: Save a checkpoint you can come back to
+
+**What a coding agent is**
+
+- A chatbot answers. A coding agent **acts**: it reads your files, edits them, runs commands, reads the errors, opens the browser, and tries again until it works. You describe, it builds, you review
+- Agent = model + tools + a loop. The model decides the next step, a tool does it (read file, edit file, run `pnpm dev`, take a screenshot), the result goes back to the model, repeat. Every step is shown to you and can be stopped
+- Its memory is the context window of the conversation. Everything it knows about your project comes from what it read this session, plus `AGENTS.md` (below)
+- Permissions: it asks before running a command or touching a file outside the project. Read the command. If it makes sense, approve. "Allow all" is for later
+
+**How to work with an agent**
+
+- Describe what you want, specifically. Say "App Router", say which file, paste the error
+- Read what it changed before you trust it: `git diff`. Throw it away with `git restore .`, keep it with `git commit`
+- One task at a time. Small steps, each one checked in the browser
+- `AGENTS.md` in the repo tells the agent the rules of this project. Next block
+
+**<Term id="harness">Harness</Term> Engineering**
+
+- The model is the same for everyone. What makes an agent good *on your project* is everything around the model: the **harness**
+- The harness is: the rules it reads first (<Term id="agentsMd" />), the guides it is pointed to (`docs/`), the memory it leaves behind (one `README.md` per experiment), the checks it must pass (`pnpm typecheck`, `pnpm build`, open the route in the browser), and the checkpoints it saves (`git commit` when something works)
+- Without a harness the agent guesses: wrong folder, Tailwind you didn't ask for, Pages Router from 2023, "it works" without ever opening the page. With one, it does the same thing the same way every time
+- State of the art, Oct 2026: `AGENTS.md` is the cross-vendor standard (Codex, Claude Code, Cursor, Gemini all read it; [agents.md](https://agents.md/)). Next.js writes its own block into it. On top of that: hooks (run typecheck after every edit), skills (reusable procedures), MCP (tools like the browser). The harness is now a bigger lever than the prompt
+- This template ships with a harness. Read `AGENTS.md` and `docs/` once; the agent reads them every session. When it keeps making the same mistake, fix the harness, not the prompt
+
+**Browser Tool: Claude in Chrome**
+
+- The agent writes code; it cannot see your page unless it has a browser. With the extension (setup below) it opens Chrome itself: navigates to http://localhost:3000, takes screenshots, reads console errors, clicks, types, scrolls
+- This closes the loop: edit → open the route → look → read the console → fix → look again. Without it the agent says "it should work". With it, it checks
+- Ask like this: "Open localhost:3000/experiments/w1/time-interval, check the console for errors, and tell me what you see". Or after a change: "Open the page and confirm the circle follows the mouse"
+- It runs in a visible Chrome window; you watch every click. Logged-in sites are visible to it too, so keep a separate Chrome profile for class if that bothers you
+- In the VS Code chat panel, type `@browser` to hand it the browser. In the terminal, `/chrome` shows status and reconnects when it drops
+- Docs: [Claude Code with Chrome](https://code.claude.com/docs/en/chrome)
+
+**Setup: Claude in Chrome (we do this together)**
+
+1. Install the [Claude in Chrome](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) extension in Chrome (also works in Brave, Edge, Arc). Sign in with the same account as Claude Code
+2. In the Claude Code terminal type `/chrome` and switch on **Enabled by default**. The status should read "Extension: Installed"
+3. Say: "Open localhost:3000 and tell me what you see". Chrome opens a tab by itself
+
+## 2. The Frontend Landscape
+
+Where the tools we use sit, so that tutorials, job posts and agents' suggestions make sense.
+
+<StackDiagram />
+
+- Fundamentals: <Term id="html" />, <Term id="css" />, <Term id="javascript" />. Everything below compiles down to these three
+- Language on top: <Term id="typescript" />. Javascript with types. What the industry writes now
+- UI frameworks (component model, state → view)
+  - <Term id="react" /> (Meta) — the standard. What we use
+  - <Term id="vue" />, <Term id="svelte" />, <Term id="angular" /> — same job, different syntax and philosophy
+- Meta-frameworks (routing, server, build on top of a UI framework)
+  - <Term id="nextjs" /> (Vercel, on React) — what we use
+  - <Term id="reactRouter" />, <Term id="astro" />, <Term id="nuxt" /> (Vue), <Term id="sveltekit" /> (Svelte)
+- Styling
+  - <Term id="cssModules" /> — what we use. Plain CSS, scoped per file
+  - <Term id="tailwind" /> (utility classes), <Term id="styledComponents" /> (CSS-in-JS), <Term id="sass" />
+- Runtime and packages (our pipeline)
+  - <Term id="nodejs" /> runs Javascript outside the browser. It is what `pnpm dev` and the socket relay run on
+  - Packages come from the <Term id="npmRegistry" />; <Term id="npm" />, <Term id="yarn" /> and <Term id="pnpm" /> are three tools that install from it. We use pnpm
+- Creative layers on top of all this
+  - <Term id="canvas" /> and <Term id="svg" /> for 2D, <Term id="p5js" /> as the art-school wrapper
+  - <Term id="webgl" /> and <Term id="webgpu" /> for the GPU, <Term id="threejs" /> on top, <Term id="glsl" /> inside
+  - <Term id="webAudio" /> for sound, <Term id="websocket" /> for real-time
+
+## 3. What is Next.js?
+
+<ImageRow
+  logos
+  items={[
+    { src: "/lecture-materials/w1/logo-react.svg", alt: "React", caption: "React", href: "https://react.dev/" },
+    { src: "/lecture-materials/w1/logo-nextjs.svg", alt: "Next.js", caption: "Next.js", href: "https://nextjs.org/" },
+  ]}
+/>
+
+1. <Term id="react" />: State-of-the-Art Frontend Framework developed by Meta
+2. Limitation of React: Frontend-only tool, relatively low-level/too simple
+3. Introduction of <Term id="nextjs" />: React-based + <Term id="ssr">Server-side-Rendering</Term> + <Term id="seo" /> + Other optimisations….
+4. Next.js: <Term id="appRouter" /> vs. Pages Router
+   1. App Router: Next.js 13+, `app/` directory, Server Components by default
+   2. Pages Router: The old way of doing Next.js, `pages/` directory, Client-first logic
+   3. We use the App Router
+   4. Disclaimer: When looking for Tutorials & Googling for resources, please do consider if the code is written in App Router or Pages Router. LLMs also mix them up: say "App Router" in your prompt
+
+## 4. Package Manager
+
+You already installed Node and pnpm in the [Prelim](/lecture-materials/prelim#tutorial-hw). This is what they are.
+
+<ImageRow
+  logos
+  items={[
+    { src: "/lecture-materials/w1/logo-npm.svg", alt: "npm", caption: "npm", href: "https://www.npmjs.com/" },
+    { src: "/lecture-materials/w1/logo-yarn.svg", alt: "yarn", caption: "yarn", href: "https://yarnpkg.com/" },
+    { src: "/lecture-materials/w1/logo-pnpm.svg", alt: "pnpm", caption: "pnpm (ours)", href: "https://pnpm.io/" },
+  ]}
+/>
+
+1. What is a <Term id="packageManager" />?
+   1. Packages: Code that someone else had written for you
+   2. You can download different 'packages' via Package Manager
+   3. Examples: <Term id="threejs" />, <Term id="tonejs" />, <Term id="socketio" />, ….
+2. <Term id="npm" /> vs. <Term id="yarn" /> vs. <Term id="pnpm" />
+   1. npm: Default & Heavy
+   2. yarn: Lighter
+   3. **pnpm: Fast package manager saving disk space**
+      1. **Let's use pnpm**
+3. Terminal Line Commands
+   1. `pnpm install`
+      1. Installs all packages written in the package.json
+   2. `pnpm add <package name>`
+      1. Installs designated package
+   3. `pnpm dev`
+      1. Kicks off your localhost, now ready to code!
+
+## 5. Create a New Next.js App
+
+Two steps today, in this order: first a bare app from scratch, then my template. So you know what a bare Next.js app is, and what the template adds on top.
+
+**Step 1. Open VS Code and a terminal**
+
+1. Open VS Code. File → Open Folder… → pick (or make) a folder where you keep projects, e.g. `Documents/code`. This folder is where every project of this workshop will live
+2. Open the terminal inside VS Code: menu **Terminal → New Terminal**, or the shortcut `` Ctrl+` `` (the key left of `1`). A panel opens at the bottom. That is a command line, already pointed at the folder you opened
+3. Whatever you type there and press Enter runs on your computer. Everything below happens in this panel
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/vscode-terminal-dropdown.png", alt: "VS Code Terminal menu", caption: "Terminal → New Terminal (image: VS Code docs, CC BY 4.0)", href: "https://code.visualstudio.com/docs/terminal/basics" },
+    { src: "/lecture-materials/w1/vscode-integrated-terminal.png", alt: "VS Code integrated terminal", caption: "The terminal panel at the bottom", href: "https://code.visualstudio.com/docs/terminal/basics" },
+  ]}
+/>
+
+**Step 2. Create the app**
+
+1. Type `pnpm create next-app@latest` and press Enter
+   - `pnpm create` → "run a project generator"; `next-app@latest` → "the Next.js one, newest version". pnpm downloads it and runs it
+2. It asks a few questions. Arrow keys to choose, Enter to confirm
+
+```
+✔ What is your project named? … scratch
+✔ Would you like to use the recommended Next.js defaults? › Yes, use recommended defaults
+```
+
+   - Name: `scratch` (anything). Then **Yes, use recommended defaults**: TypeScript, ESLint, App Router, Tailwind, AGENTS.md. Done
+3. It prints `Success! Created scratch at …`. A new folder `scratch/` appeared in the file panel on the left, with the packages already installed
+4. Docs: [create-next-app](https://nextjs.org/docs/app/api-reference/cli/create-next-app)
+
+**Step 3. Start it**
+
+1. Open the new folder in a new window: **File → New Window**, then in that window **File → Open Folder… → `scratch`**. Then **Terminal → New Terminal**. One window = one project = one terminal pointed at it. Always do it this way; never `cd` around inside one terminal
+2. `pnpm dev` → "run the script called dev from package.json". That script is `next dev`: it starts a development server, which builds your pages on the fly and reloads the browser whenever you save a file. You see:
+
+```
+▲ Next.js 16.4.0 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.12:3000
+✓ Ready in 241ms
+```
+
+   - `Local: http://localhost:3000` is the address. `localhost` = this computer, `3000` = the port the server listens on
+   - The terminal is now busy running the server. Leave it. `Ctrl+C` stops it. To type other commands, open a second terminal with the `+` in the terminal panel
+3. Open http://localhost:3000 in Chrome. You get the Next.js welcome page
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/scratch-welcome.jpg", alt: "Next.js welcome page", caption: "localhost:3000 right after pnpm dev" },
+  ]}
+  wide
+/>
+
+**Hello World~! (scratch)**
+
+1. Where is that page coming from? In the file panel open `scratch/app/page.tsx`. That file *is* localhost:3000
+   - `app/page.tsx` → what you see at `/`
+   - `app/layout.tsx` → the frame around every page (html, body, fonts). You rarely touch it
+   - `app/globals.css` → styles for the whole site
+   - `package.json` → the list of packages and the `dev` / `build` scripts. `pnpm dev` reads this
+   - That is all of it
+2. Replace everything in `app/page.tsx` with this, and save (`Cmd+S` / `Ctrl+S`):
+
+```tsx
+export default function Home() {
+  return (
+    <main style={{ padding: "4rem", fontFamily: "sans-serif" }}>
+      <h1>Hello World~!</h1>
+      <p>This is app/page.tsx. Change this text and save.</p>
+    </main>
+  );
+}
+```
+
+   - A page is a function that returns HTML-looking code (JSX). `export default` means "this is the page"
+   - The browser updates by itself. No refresh, no restart
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/scratch-hello.jpg", alt: "Hello World page", caption: "After saving page.tsx" },
+  ]}
+  wide
+/>
+
+3. Make a second page. New folder `app/hello/`, new file `app/hello/page.tsx`:
+
+```tsx
+export default function Hello() {
+  return <h1>Hello</h1>;
+}
+```
+
+   - Open http://localhost:3000/hello. Every folder with a `page.tsx` inside `app/` becomes a URL. Folder name = URL
+4. Now open http://localhost:3000/anything-else. You get a 404: "This page could not be found". That is what any URL without a `page.tsx` shows. Not an error in your code, just no page there yet
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/scratch-404.jpg", alt: "Next.js 404 page", caption: "A URL with no page.tsx" },
+  ]}
+  wide
+/>
+
+5. `Ctrl+C` in the terminal stops the server
+
+## 6. Use the ID412 Workshop Template
+
+Now the template. I made you a repository with the basic skeleton (this same app, plus these notes and folders for your experiments) and the agent setup (`AGENTS.md`, `docs/`) already done. In class we follow it.
+
+There are two ways to get it onto your computer. **Way A** is by hand, so you see every step once. **Way B** hands the same steps to the agent. Do A today; use B from now on if you like.
+
+**Way A · Step 1. Make your own copy on GitHub**
+
+1. Open https://github.com/jeanyoon-choi/id412-2026 while logged in to GitHub
+2. Green button **Use this template** → **Create a new repository**
+3. Repository name: `id412-yourname`. Public or private, both fine. **Create repository**
+4. You now have `github.com/YOURNAME/id412-yourname`. It is yours, not connected to mine
+
+**Way A · Step 2. Clone it to your computer**
+
+1. **File → New Window**, then **File → Open Folder… → `Documents/code`** (your projects folder, not `scratch`). **Terminal → New Terminal**
+2. On your GitHub page, green **Code** button → copy the HTTPS URL. Then:
+
+```
+git clone https://github.com/YOURNAME/id412-yourname.git
+```
+
+   - `git clone` → "download this repository, with its history, into a new folder named like the repo"
+3. **File → New Window**, then **File → Open Folder… → `id412-yourname`**. **Terminal → New Terminal**. This window is the one you will work in from now on
+4. `pnpm install` → reads `package.json`, downloads every package it lists into `node_modules/`. Takes a minute the first time. You run this once after cloning, and again only if `package.json` changes
+5. `pnpm dev` → http://localhost:3000. You see these notes, served from your own computer
+6. `git remote -v` → prints your GitHub URL. The clone is already connected to your repository; `git push` later goes there
+
+**Way B · With the agent**
+
+Step 1 (the GitHub copy) is still yours to click. Steps 2.2 to 2.5 can be Claude Code's. In the window opened on your projects folder, type `claude` in the terminal and say:
+
+> Clone https://github.com/YOURNAME/id412-yourname.git into this folder, install its dependencies with pnpm, and tell me the command to start it.
+
+It runs the same commands and shows you each one. If it asks permission to run a command, read the command, then approve.
+
+**Hello World~! (template)**
+
+1. localhost:3000 → the index of these notes. Same `app/page.tsx` as before, different content
+2. http://localhost:3000/experiments/w1/time-interval → the first experiment, already in the repo, so you can see where things go
+3. http://localhost:3000/anything-else → the 404 page. The template has its own one in `app/not-found.tsx`
+4. What are each directory for?
+   1. `app/` → Where you handle Routes/Pages, and where most of things happen
+      1. `app/lecture-materials/` → These notes. You don't touch this
+      2. `app/experiments/w1/`, `w2/`, `w3/` → In-class coding, one folder per experiment. This is yours
+      3. `app/final/` → Your final project
+      4. `app/api/` → Server side api calling (W3)
+   2. `hooks/` → React's Custom Hooks (`hooks/shared/useSocket.ts`, W2)
+   3. `public/` → Where you store your assets (images, videos, 3d models)
+   4. `docs/` → Guides for you and your agent. `AGENTS.md` → the agent's rules
+   5. `node_modules/` → Packages codes downloaded from pnpm. Never edit, never commit
+5. Code structure
+   1. Each experiment folder has `page.tsx` and `*.module.css`
+      1. `page.tsx`: Your logic and JSX components
+      2. `*.module.css`: <Term id="cssModules" /> powered styling
+   2. `"use client"` on the first line when you use state, effects, events, browser APIs
+   3. Files are <Term id="typescript" /> (`.tsx`)
+6. For the final you have two options, both fine: grow your work inside this template's `app/final/`, or start a brand-new app from scratch (section 5) and copy over only what you need. You now know how to do both
+
+## 7. How We Work in Class
+
+- I don't hand out code. We open Claude Code together and build each experiment live, from an empty folder. You do the same on your laptop, at the same time
+- The loop: describe → agent builds → look → say what's wrong → repeat
+- One experiment = one folder: `app/experiments/w1/<kebab-name>/`. Name it after what it does (`time-interval`, `mouse-trail`), not `test1`
+  - `page.tsx` (+ `page.module.css`) inside. Helpers next to it. Assets in `public/experiments/w1/<kebab-name>/`
+  - The agent writes a short `README.md` in the folder: what it is, inputs, parameters, how to run. The rules are in `docs/experiments/README.md` and the agent knows them from `AGENTS.md`
+- The prompt that starts every experiment, roughly: "Create `app/experiments/w1/<name>` with a full-screen canvas that ..." Then look at localhost:3000/experiments/w1/name and talk to it
+- A variant is a new folder (`mouse-trail-2`), not an edit. Finished experiments stay as a record
+- After each experiment that works: `git add .` → `git commit -m "w1: <name>"`. Before a risky change: commit. When the agent breaks it: `git restore .`
+- If you fall behind, ask the agent to build what you saw, in your words
+
+## 8. Let's Start Coding
+
+**Bottom-up tinkering**
+
+- Later, for the final or any big project, you will need top-down: concept first, system, then parts. We'll get there
+- But you are at the start and there is a lot to take in. So this week is bottom-up: small, cute experiments, one idea each, ten minutes each
+- The goal is to get a feel. What a canvas can do, what time does, what the mouse does, what an image grid does
+- What you take from each one is not the code. It is a texture, a motion, a composition, an aesthetic you liked. Write it down. These become your references when you design the real thing
+
+Now let's start coding! Most of these draw on a <Term id="canvas" /> or plain HTML elements. Each one is a folder in `app/experiments/w1/`.
+
+**Time interval**
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/time-interval.jpg", alt: "Time interval experiment", caption: "/experiments/w1/time-interval, in the repo", href: "/experiments/w1/time-interval" },
+  ]}
+/>
+
+1. Simple Time Interval (localhost:3000/experiments/w1/time-interval). This one is already in the template: open `app/experiments/w1/time-interval/` and read `README.md`, `page.tsx`, `page.module.css`. Every experiment from now on looks like this
+2. Miyajima Tatsuo-inspired Time Interval [LINK](https://www.mca.com.au/exhibitions/tatsuo-miyajima-connecting-with-everything/)
+
+**Mouse move**
+
+1. Simple Mouse Move Visual
+2. Simple Kaonashi
+3. Scary Kaonashi
+4. James Turrell-inspired interaction [LINK](https://www.pacegallery.com/artists/james-turrell/)
+
+**Image**
+
+1. Simple Image
+2. Multiple Images
+3. Grid Images
+4. Overlap Images
+5. Chaotic Images
+
+**Video**
+
+1. Simple Youtube iframe (Kim Beom [LINK](https://www.youtube.com/watch?v=1SwA46-lSWk&t=530s))
+2. Youtube iframe with designated start time
+3. Multiple Youtubes
+4. Overlap Youtubes
+
+**Data**
+
+1. Simple Data Calling
+2. Data with Date
+3. Simple Data Vis
+
+**Word-puzzle (Beta)**
+
+1. Simple Word Puzzle
+2. Experimental Typography
+
+## 9. Canvas
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/canvas-sota-backend.jpg", alt: "SoTA, the Backend: monochrome lines depicting LLM token cross-similarities", caption: "SoTA (2024), the Backend: when the audience leaves, the screens flip to monochrome lines of LLM token cross-similarities. Drawn in the browser (this one is SVG; Canvas does the same job in pixels)", href: "https://www.xdlab.net/projects/sota" },
+  ]}
+  wide
+/>
+
+- What is <Term id="canvas" />?
+  - An HTML element that is a bitmap. You draw on it from Javascript: `getContext("2d")`, then `fillRect`, `arc`, `lineTo`, `drawImage`
+  - Nothing is remembered. Every frame you clear and draw again. The loop is `requestAnimationFrame`
+  - Canvas vs <Term id="svg" />: SVG is shapes in the DOM, sharp and styleable, fine up to hundreds of elements. Canvas is pixels: thousands of things, every frame
+- In React: `useRef` for the element, `useEffect` to start the loop and cancel it in cleanup, size it with `innerWidth/innerHeight` × `devicePixelRatio`
+- Parameters: time and the mouse, same as GLSL next. The difference: Canvas draws one shape at a time on the CPU; GLSL computes every pixel at once on the GPU
+- References
+  - MDN Canvas tutorial [LINK](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial)
+  - The Nature of Code (Daniel Shiffman) [LINK](https://natureofcode.com/)
+
+## 10. GLSL
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/glsl-face-voronoi.jpg", alt: "Face Voronoi, a GLSL experiment", caption: "One fragment shader: a Voronoi field in hue, every pixel computed on the GPU" },
+  ]}
+  wide
+/>
+
+- What is <Term id="glsl" />?
+  - OpenGL Shading Language: a small C-like language that runs on the GPU, not in Javascript
+  - Your program runs once per vertex (vertex shader) and once per pixel (fragment shader), all of them in parallel
+  - Fragment shader: given a pixel coordinate (and time, mouse, …), return a colour. That's it
+  - Thousands of pixels at once → things that are too slow in a Canvas loop become free
+- How does it connect to Three.js?
+  - <Term id="shaderMaterial" />: a material whose vertex/fragment shaders you write yourself
+  - <Term id="uniforms" />: values you pass from Javascript into the shader every frame (time, mouse, resolution, …)
+  - A single full-screen plane + a fragment shader = a 2D canvas painted by the GPU
+- What is it good for?
+  - Per-pixel fields: gradients, noise, flow, distance fields, blur, feedback
+  - Large numbers of particles / instances
+  - Post-processing: effects over the whole frame
+- Not good for: layout, text, UI logic. Let React/CSS do that
+- References
+  - The Book of Shaders [LINK](https://thebookofshaders.com/)
+  - Shadertoy [LINK](https://www.shadertoy.com/)
+  - Three.js ShaderMaterial [LINK](https://threejs.org/docs/#api/en/materials/ShaderMaterial)
+
+**GLSL examples**
+
+1. Hello Fragment Shader: colour from uv
+2. Time & mouse uniforms
+3. Noise field
+4. Feedback
+
+## 11. Three.js
+
+<ImageRow
+  logos
+  items={[
+    { src: "/lecture-materials/w1/logo-threejs.svg", alt: "Three.js", caption: "Three.js", href: "https://threejs.org/" },
+    { src: "/lecture-materials/w1/logo-react.svg", alt: "React Three Fiber", caption: "+ React Three Fiber", href: "https://r3f.docs.pmnd.rs/" },
+  ]}
+/>
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/threejs-banpo-xism.jpg", alt: "Banpo-Xism, the 3D apartment field manifold on the media wall", caption: "Banpo-Xism (2026), the media wall: 3D apartment field manifold, Three.js", href: "https://banpo-xism.vercel.app/" },
+  ]}
+  wide
+/>
+
+- What is <Term id="threejs" />?
+  - A Javascript 3D Library
+  - 3D + Javascript, Web 3D, Open Source (Free!), Coding-based
+  - Interactive, Accessible, Incorporable with pre-built 3D Models
+  - Vanilla Three.js = Vanilla Javascript + Three.js
+    - I.e. Not using React Three
+    - Do-able but longer code, not bonded with React Logic
+- What is React-Three?
+  - Series of frameworks/integration strategy to use Three.js efficiently and in a React Way
+  - **<Term id="r3f">React-Three Fiber</Term>:** React renderer for Three.js [LINK](https://r3f.docs.pmnd.rs/getting-started/introduction)
+    - https://codesandbox.io/p/sandbox/5g22g7
+  - **<Term id="drei">React-Three Drei</Term>:** Collection of Ready-to-use utilities/help functions [LINK](https://github.com/pmndrs/drei)
+  - <Term id="postprocessing">React-Three Postprocessing</Term>: Post-processing Effects [LINK](https://github.com/pmndrs/react-postprocessing)
+  - <Term id="rapier">React-Three Rapier</Term>/Cannon: Physics Library [LINK](https://github.com/pmndrs/react-three-rapier)
+  - Not exactly a React-Three integration, but <Term id="reactSpring">React Spring</Term> (Animation Library) [LINK](https://www.react-spring.dev/)
+- Why Three.js?
+  - Cinema 4D: Static 3D Moving Image, GUI-based, High Accessibility, Low Interactivity
+  - Unity: Interactive 3D Game, GUI + C# Coding, Low Accessibility, High Interactivity
+  - Three.js: Interactive web-based 3D environment, Javascript-based Coding, Mid Accessibility, Mid Interactivity
+  - When to Use Three.js
+    - Interactive Web
+    - Integrated Web
+    - Easy-to-access Demo (No Installation)
+    - 'Wow' Effect
+    - Future of Web / WebXR
+- Good Three.js Examples/References
+  - Three.js Reference [LINK](https://threejs.org/examples/)
+  - React-Three Fiber References [LINK](https://r3f.docs.pmnd.rs/getting-started/examples)
+  - Web Art & Experiments
+    - Google A&C Heartbeat of the Earth [LINK](https://experiments.withgoogle.com/collection/heartbeat-earth)
+    - The WebGL Globe, GitHub Contribution Graph (3D Data Visualisation)
+  - Portfolios: Active Theory (Particles), Bruno Simon (Car-based)
+- Good Three.js Tutorials
+  - Free
+    - Wawa Sensei [LINK](https://www.youtube.com/watch?v=pXpckHDDNYo&list=PLpepLKamtPjiUF6PvVUbIFhx9HaS0qJs_)
+    - There are loads of YouTube tutorials out there
+  - Paid
+    - Three.js Journey [LINK](https://threejs-journey.com/)
+    - Wawa Sensei [LINK](https://wawasensei.dev/)
+
+**Setup & Primitives: Let's Code from Scratch**
+
+1. Hello Three.js: Build a Cube
+2. Additional Lights
+3. Moving Around the Scene
+   1. OrbitControls, <Term id="drei">@react-three/drei</Term>
+4. Different Geometries? Box, sphere, cylinder, cone?
+   1. More bunches of geometries: [LINK](https://threejs.org/docs/#api/en/geometries/BoxGeometry)
+   2. Disclaimer: This is a Vanilla Three.js Not React-Three Logic
+5. Different Materials? MeshBasic? MeshNormal? MeshStandard?
+   1. More bunches of materials: [LINK](https://threejs.org/docs/#api/en/materials/MeshBasicMaterial) [LINK2](https://chriscourses.com/blog/a-comprehensive-guide-to-materials-in-threejs)
+   2. Disclaimer: This is a Vanilla Three.js Not React-Three Logic
+6. Multiple Meshes
+   1. Hint: Use `new Array(n).fill(0).map((_, i) => ...)`
+   2. Or use your agent
+7. Animations
+   1. useFrame from @react-three/fiber
+8. Load your custom 3d Model
+   1. Gltf-2-jsx [LINK](https://gltf.pmnd.rs/)
+9. Environment Map
+
+## 12. Deployment
+
+<ImageRow
+  logos
+  items={[
+    { src: "/lecture-materials/w1/logo-vercel.svg", alt: "Vercel", caption: "Vercel", href: "https://vercel.com/" },
+  ]}
+/>
+
+1. Deploying: Making your localhost-coded web-app live, accessible throughout the world!
+2. Next.js → Easy Deployment via <Term id="vercel" />
+3. Sign-up Vercel https://vercel.com/
+4. First, you need to push your code to GitHub. On your VS Code Terminal, type
+   1. `git add .`
+   2. `git commit -m "Update"`
+   3. `git push`
+5. Now your code repository on your GitHub is up to date
+6. Head to vercel https://vercel.com/
+7. Add New > Project > Import Git Repository > 'Import' > **Framework Preset set Next.js >** Deploy
+8. Tada!
+9. From now on, every `git push` redeploys
+
+## 13. Homework: Web Assignment 1
+
+**Build a Creative Coding Experience.** Not graded. Essential. Due to Web 2 (11/2).
+
+1. One single-device experience, in this repo, deployed on Vercel
+   - `app/experiments/w1/<name>/page.tsx`. Canvas, GLSL, or Three.js, your choice. Or all three
+   - It must change over time or respond to input (mouse, keyboard, scroll, microphone, camera)
+2. Think in parameters
+   - Write down the 3 to 5 parameters your visual has. Hook at least two of them to an input

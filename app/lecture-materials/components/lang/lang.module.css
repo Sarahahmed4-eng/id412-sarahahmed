@@ -1,0 +1,33 @@
+.group {
+  display: inline-flex;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.option,
+.active {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0.25rem 0.55rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.option + .option,
+.option + .active,
+.active + .option {
+  border-left: 1px solid var(--rule);
+}
+
+.option:hover {
+  color: var(--fg);
+}
+
+.active {
+  background: var(--fg);
+  color: var(--bg);
+}

@@ -1,0 +1,239 @@
+import { Term } from "@/app/lecture-materials/components/term/term";
+import { ImageRow } from "@/app/lecture-materials/components/image-row/image-row";
+
+# W2
+
+Week 2. Cross-Device Interaction (WebSocket)
+
+## 1. Mobile Modality & Parametric Interface
+
+**Mobile Modality: The Phone as an Instrument**
+
+- Think of the classic "2001: A Space Odyssey" scene: a bone becomes a satellite. This represents the evolution of a tool.
+  - [2001: A Space Odyssey (1968) - From Bone to Satellite Scene (1/6) | Movieclips](https://www.youtube.com/watch?v=avjdKTqiVvQ)
+- Steve Jobs introducing the iPhone in 2007 was a similar moment. It put a powerful new tool in our hands.
+  - [Steve Jobs introduces iPhone in 2007](https://youtu.be/MnrJzXM7a6o?si=eriyVK-ald9RRGN9&t=274)
+- The best tool we have is our fingers. The iPhone/smartphone is an instrument played by our fingers.
+- **Our Goal**: To build interfaces that respond to this "performance."
+  - Instrumental Interface
+
+**Two Types of Interaction**
+
+- **1. Semantic Interaction (Meaning-based)**
+  - **What it is**: Discontinuous, categorical. You make a clear choice.
+  - **Examples**: Clicking a button, selecting an option from a menu.
+  - **Used in**: Most practical interfaces (apps, websites).
+- **2. Phenomenological Interaction (Experience-based)**
+  - **What it is**: Continuous, flowing.
+  - **Examples**: Moving your body, dragging your finger, scrolling.
+  - **Used in**: Interactive art, games.
+**Parametric Web Interface**
+
+- **What is it?** An interface where your mobile interactions (inputs) are used to change _parameters_ (variables).
+- Think of it like playing an instrument: your actions change the sound. Here, your actions change the _context_, the _time_, or the _space_.
+- **Example: Changing Time**
+  - _Semantic way_: Typing "8:00 AM" in a box.
+  - _Phenomenological way_: Dragging a dial, like the iOS Alarm clock. (iOS Wheel Picker - inspired from Las Vegas)
+  - _Question_: Which is more intuitive? More fun?
+- **Example: Changing Season**
+  - _Semantic way_: 4 separate buttons ("Spring," "Summer," "Fall," "Winter").
+  - _Phenomenological way_: A continuous X-axis or Y-axis slider that blends between seasons.
+- **Example: Changing Job**
+  - _Semantic way_: A dropdown list of pre-set jobs.
+  - _Phenomenological way_: A "blurry" selection space where you can slide between different job categories.
+
+**Input Materials (The "Keys" of Your Instrument)**
+
+- **I. Selection / Navigation (Broad Control)**
+  - Scrolling
+  - Swiping (e.g., Tinder-style card swipe)
+  - Zoom-in / Zoom-out
+- **II. Fine-Tuning (Precise Control)**
+  - Finger-Skating / Sketching (drawing on the screen)
+  - Set of Togglers (on/off switches)
+  - Set of Sliders
+  - Set of Buttons
+  - Accelerometer (tilting the phone)
+  - Voice/Speech
+    - _Semantic_: Speech-to-Text (what you say)
+    - _Non-Semantic_: Volume size (how loud you are)
+  - Camera Tracking (Eye tracking, Object detection)
+  - Rotating & Zooming an object
+
+## 2. Multi-Device Interaction
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w2/multi-device-banpo-xism.jpg", alt: "Banpo-Xism: a visitor holds up a phone in front of the media wall", caption: "Banpo-Xism (2026): phone = input, media wall = output", href: "https://banpo-xism.vercel.app/" },
+  ]}
+/>
+
+- Multi-Device Interaction: Using two or more devices
+  - Ex. Mobile: Input, Screen/Laptop: Output
+
+**Single Device vs. Multi-Device**
+
+- **Single Device (e.g., Laptop only)**
+  - **Structure**: User Input (Mouse/Keyboard) → Parameter Conversion → Visual Output
+  - **Inputs**: Mouse click duration, mouse move velocity/path, keyboard typing speed.
+  - **Artistic Strategy**: "Verfremdungseffekt" (Defamiliarization effect) – making a normal interaction (like typing) create an unexpected result.
+- **Multi-Device Web Artwork (Our Focus)**
+  - **Input Device**: Mobile (iOS / Android)
+  - **Output Device**: Laptop (1920 x 1080 screen)
+  - **Why?** Phone interactions (touch, tilt) have a different _phenomenological_ feel than laptop interactions (mouse, keyboard).
+
+**Creating Your 'Visual Instrument'**
+
+- This is the core design structure for your project.
+- **The Flow**: Mobile Input → Parameter Conversion + System Rules → Laptop Output
+- **Which Inputs to Use? (Mobile)**
+  - Button 'Tab'
+  - Finger 'Swipe'
+  - Zoom, Pinch, Rotate
+  - Voice Input, Camera Input
+  - TTS/STT (Text-to-Speech, Speech-to-Text)
+  - LLM <Term id="api" /> (sending prompts to an AI)
+  - Decibel (sound level)
+  - External Data (weather, traffic, stock prices)
+- **Which Outputs to Use? (Laptop)**
+  - Creative Coding (<Term id="canvas" />, <Term id="glsl" />)
+  - Text / Typography (changing font, size, layout)
+  - Collage of Images / Videos
+  - 3D Graphics (e.g., using <Term id="threejs" />)
+  - Audio Elements (e.g., using <Term id="tonejs" />)
+
+## 3. Socket.io
+
+- <Term id="websocket" />: Bi-directional real-time communication btw client/server, enabling real-time inter-device interaction in web applications
+- <Term id="socketio" />: Javascript library, high-level abstraction of WebSocket, beginner-friendly (Automatic reconnection, Default fallback option)
+- Strategy
+  - Let's say we have Client A (Interaction Input) and Client B (Interaction Output)
+  - Client A → Send Message to Relay Server → Relay Server Propagates Message to all other clients in the same room → Client B Receives a message
+- Already installed in the template: `socket.io` (server), `socket.io-client` (browser)
+
+**How it is structured in this repo**
+
+- `socket-server.mjs` → The relay server. One file, port 4000
+  - `join(room)`: A device joins a room
+  - `message({ type, data })`: Forwarded as-is to every other device in the same room
+  - It is not part of Next.js. It is a separate Node process (that's why Vercel can't host it, see below)
+- `hooks/shared/useSocket.ts` → The client-side hook
+  - `const { send, connected } = useSocket(room, onMessage)`
+  - `send(type, data)` → emits to the room
+  - `onMessage(type, data)` → called for every message from the other devices
+  - Address: `NEXT_PUBLIC_SOCKET_URL` if set, otherwise the current host at port 4000
+- Route convention for one experiment
+  - Client A Mobile: `app/experiments/w2/<name>/mobile/page.tsx` → localhost:3000/experiments/w2/name/mobile
+  - Client B Screen: `app/experiments/w2/<name>/screen/page.tsx` → localhost:3000/experiments/w2/name/screen
+  - Both call `useSocket("<name>", ...)` with the same room name
+
+**Overall workflow**
+
+1. Screen page mounts → `useSocket` connects to the relay → `join("name")`
+2. Mobile page mounts → same
+3. Mobile: `send("action", { x, y })`
+4. Relay: forwards `{ type: "action", data: { x, y } }` to the rest of the room
+5. Screen: `onMessage("action", { x, y })` → update your state → render
+
+- This is the base code. You can make it more complicated/add modularity on top of it
+- What will be your speculative inter-device interaction? How will you use this technology to design your interactive/immersive audio-visual design practice?
+- You can also connect Socket.io/WebSocket with TouchDesigner or Unreal (W3)
+
+**Socket.io examples**
+
+1. Simple: Tap on mobile, respond on screen
+2. Continuous: Touch move / tilt on mobile, parameter on screen
+3. Multiple mobiles, one screen
+
+**Deployment: where does the relay live?**
+
+- <Term id="vercel" /> hosts the Next.js app only. No long-running process, so no socket relay. A single-device page (W1) deploys to Vercel and is done. A cross-device piece needs the relay somewhere else. Four options
+- **A · The laptop is the server** (what we do for WA2, the final and the Black Room)
+  - `pnpm dev:mobile`. Phone and laptop on the same Wi-Fi. The relay runs on the laptop, the phone opens `https://<laptop IP>:3000`
+  - Nothing to deploy, works without internet. Reach: that one network
+- **B · Vercel for the app + the relay on a Node host** (when you want a public URL)
+  - `socket-server.mjs` runs unchanged on any Node host. In Vercel set `NEXT_PUBLIC_SOCKET_URL` to the relay's address; the host gives you HTTPS, so the socket is `wss://`
+  - Hosts, as of Oct 2026: [Render](https://render.com/docs/free) free web service (sleeps after 15 min idle, wakes in about a minute on the next connection: fine for a portfolio, not for an exhibition) · [Railway](https://docs.railway.com/reference/pricing/plans) (one-time $5 trial credit, then Hobby $5/month) · [Fly.io](https://fly.io/docs/about/pricing/) (no free tier, a few dollars a month) · AWS EC2 + Nginx + PM2 (what Banpo-Xism and the XD Lab relays run on. The most work, the most control)
+  - Heroku, which earlier years of this workshop used, has had no free tier since 2022
+- **C · Tunnel the laptop** (a demo from somewhere else, for an hour)
+  - The relay stays on your laptop; a tunnel gives it a public address: [ngrok](https://ngrok.com/docs/pricing-limits/free-plan-limits) (`ngrok http 4000`; free: 1 dev domain, 3 endpoints, 1 GB/month) or [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) (`cloudflared tunnel --url http://localhost:4000`)
+  - The laptop must stay open and online. For a demo, not for an installation
+- **D · A hosted realtime service instead of our relay**: [Ably](https://ably.com/), [Pusher](https://pusher.com/), [Supabase Realtime](https://supabase.com/realtime), [PartyKit](https://www.partykit.io/). Free tiers, no server to run, a different API from `useSocket`. Only if you already know why you want it
+- In this workshop: A. If you want your piece online for your portfolio: B with Render. I will show B once in W3
+
+## 4. Debugging & QA
+
+**A. Mobile Debugging**
+
+- Mobile Debugging: Hard
+- Cross-Device (Mobile + Desktop) Debugging: VERY HARD
+  - Glad that this job won't be taken by AI very soon!
+
+### A1. Local Network Connection (Using ifconfig)
+
+Your mobile device cannot access localhost:3000 because "localhost" refers to the device _itself_. You must connect your mobile to your computer's local network IP address.
+
+- **Find Your Computer's IP:** On your computer, open the Terminal.
+  - On **macOS** or **Linux**, type `ifconfig | grep "inet "`.
+  - On **Windows**, type `ipconfig`.
+  - `pnpm dev:mobile` also prints it (see A3).
+- **Identify the IP:** Look for an IP address in the list that looks like 192.168.1.XX or 10.0.0.XX. This is your computer's local IP address.
+- **Connect Devices:** Ensure your mobile phone and your computer are connected to the **same Wi-Fi network**. If the school Wi-Fi blocks device-to-device traffic, use your phone's hotspot.
+- **Access on Mobile:** On your phone's browser (e.g., Chrome or Safari), type `https://<YOUR_IP_ADDRESS>:3000`. For example: https://192.168.1.10:3000/experiments/w2/simple/mobile
+
+### A2. Remote Debugging (iOS vs. Android)
+
+This is how you "Google it" to see console.log() messages, inspect the DOM, and check network requests from your phone on your computer's screen.
+
+#### Android (Chrome Debugging)
+
+1. **On Your Android Device:** Enable "Developer Options" (this is usually hidden; search how to enable it for your specific phone). Inside Developer Options, toggle on "USB Debugging".
+2. **On Your Computer:** Connect your phone to your computer with a USB cable.
+3. Open desktop **Chrome** and type `chrome://inspect#devices` into the address bar.
+4. You should see your device and any open tabs. Click "Inspect" on the tab you want to debug.
+5. A full DevTools window will open, allowing you to inspect your mobile browser session.
+
+#### iOS (Safari Web Inspector)
+
+**Note:** This process requires a **Mac**.
+
+1. **On Your iPhone:** Go to Settings > Safari > Advanced and toggle on "Web Inspector".
+2. **On Your Mac:** Open **Safari**. Go to Safari > Preferences > Advanced and tick the box at the bottom: "Show Develop menu in menu bar".
+3. **Connect:** Connect your iPhone to your Mac with a USB cable.
+4. On your Mac's Safari, click the new "Develop" menu. You should see your iPhone's name.
+5. Hover over your iPhone's name to see a list of open tabs. Click the tab you wish to debug to open a Web Inspector window.
+
+### A3. <Term id="https">HTTPS</Term> for Local Dev: `pnpm dev:mobile`
+
+Modern browsers block sensitive APIs (like the camera, microphone, or accelerometer) on insecure http:// connections for security reasons. `localhost` is an exception (it counts as a secure context), which is why `pnpm dev` was enough in W1. The moment your phone connects via `192.168.x.x`, it is not localhost anymore, so you must serve your local site over https://.
+
+**What `pnpm dev:mobile` does**
+
+- Runs `next dev --experimental-https -H 0.0.0.0` → Next.js generates a self-signed certificate into `certificates/` (first time only, it may ask for your password) and listens on https://localhost:3000, reachable from your phone via your IP
+- Runs `node socket-server.mjs` → the relay reuses the same certificate and listens on https://localhost:4000. It prints the phone URL
+
+**CRITICAL: Bypassing the Security Warning (twice)**
+
+This uses a **self-signed certificate**, which your phone does not trust by default. You will see a large security warning page (e.g., "Your connection is not private" or NET::ERR_CERT_AUTHORITY_INVALID).
+
+- This is **normal** and **expected**.
+- On the warning screen, tap **"Advanced"** → **"Proceed (unsafe)"**.
+- You have to do this for BOTH ports:
+  1. `https://<YOUR_IP>:3000` → the page
+  2. `https://<YOUR_IP>:4000` → the relay. Open it once in the phone browser, pass the warning, you should see "socket relay ok"
+- If you skip step 2 the symptom is: "the page loads but nothing arrives on the screen". The socket is silently blocked.
+
+You only need to do this once per device (until the certificate changes). Your phone will then load the https:// version of your site, and your sensitive APIs (camera, accelerometer, etc.) will now work for testing.
+
+**B. Other Debugging Strategies**
+
+## 5. Homework: Web Assignment 2
+
+**Build a Mobile-to-Laptop Interactive Experience.** Not graded. Essential. Due to Web 3 (11/16).
+
+1. Two routes in this repo: `app/experiments/w2/<name>/mobile/page.tsx` and `.../screen/page.tsx`, joined by `useSocket`
+   - Phone = instrument. Laptop = output. At least one continuous input (touch move, tilt, microphone) and one discrete input (tap, button)
+2. Think in parameters (section 1 of these notes)
+   - What is the semantic input? What is the phenomenological one?
+3. Deliver: a 30-second screen recording of a phone driving the laptop, plus the repo URL. The relay runs on your laptop, so there is no live URL for this one
+4. One paragraph: the flow (input → parameters → system rules → output), and what you would build for the Black Room

@@ -1,0 +1,36 @@
+.head {
+  cursor: default;
+}
+
+.toggle {
+  display: inline-block;
+  width: 1.25rem;
+  margin-right: 0.35rem;
+  margin-left: -1.6rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0.55;
+}
+
+.head:hover .toggle,
+.toggle:focus-visible {
+  opacity: 1;
+  color: var(--fg);
+}
+
+.collapsed {
+  opacity: 0.6;
+}
+
+@media (max-width: 900px) {
+  .toggle {
+    margin-left: -1.3rem;
+  }
+}

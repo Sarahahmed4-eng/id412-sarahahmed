@@ -1,0 +1,540 @@
+import { Term } from "@/app/lecture-materials/components/term/term";
+import { ImageRow } from "@/app/lecture-materials/components/image-row/image-row";
+import { StackDiagram } from "@/app/lecture-materials/components/stack-diagram/stack-diagram";
+
+# W1
+
+1주차. 크리에이티브 웹 개발 입문.
+
+## 1. AI 에이전트: VS Code + Claude Code [#1-vs-code--claude-code-setup]
+
+<ImageRow
+  logos
+  items={[
+    { src: "/lecture-materials/w1/logo-vscode.svg", alt: "VS Code", caption: "VS Code", href: "https://code.visualstudio.com/" },
+    { src: "/lecture-materials/w1/logo-typescript.svg", alt: "TypeScript", caption: "TypeScript", href: "https://www.typescriptlang.org/" },
+  ]}
+/>
+
+1. <Term id="vscode" /> (Visual Studio Code) = 네 에디터 (코드를 쓰는 곳)
+2. <Term id="claudeCode" /> = 네 코딩 에이전트 (같이 코드를 쓰는 존재)
+   - 대안: [OpenAI Codex](https://chatgpt.com/codex), [Gemini CLI](https://github.com/google-gemini/gemini-cli), [Cursor AI](https://cursor.com/), [GitHub Copilot](https://github.com/features/copilot)
+3. 설치: Claude Code <Term id="cli">CLI</Term> + VS Code의 Claude Code 확장 (단계별 설명은 [Prelim 5절](/lecture-materials/prelim#5-how-to-use-ai-agents))
+4. VS Code에서 프로젝트 폴더를 열고, 터미널을 열고, `claude` 입력
+5. 모델 (platform.claude.com 가격, 100만 토큰당)
+   1. Claude Fable 5.1: 입력 $10 / 출력 $50
+   2. Claude Opus 5.5: 입력 $4 / 출력 $20
+   3. 수업에서는 비용 때문에 Opus 5.5를 쓴다. Claude Code 안에서 `/model`로 바꾼다
+6. <Term id="harness">하네스</Term>: <Term id="agentsMd" /> + `docs/` + 실험별 README + 타입체크 + 커밋. 아래
+7. 브라우저: `/chrome` 켜기. 에이전트가 localhost:3000을 직접 열어 자기 작업을 확인한다. 아래
+8. 체크포인트로서의 <Term id="git" />
+   1. `git diff`: 에이전트가 뭘 바꿨지?
+   2. `git restore .`: 에이전트가 바꾼 걸 버린다
+   3. `git add .` + `git commit -m "..."`: 돌아올 수 있는 체크포인트를 남긴다
+
+**코딩 에이전트란**
+
+- 챗봇은 대답한다. 코딩 에이전트는 **행동한다**: 네 파일을 읽고, 고치고, 명령을 실행하고, 에러를 읽고, 브라우저를 열고, 될 때까지 다시 시도한다. 네가 설명하면 만들고, 네가 검토한다
+- 에이전트 = 모델 + 도구 + 루프. 모델이 다음 단계를 정하고, 도구가 실행하고(파일 읽기, 파일 고치기, `pnpm dev` 실행, 스크린샷), 결과가 모델로 돌아가고, 반복. 모든 단계가 네게 보이고 멈출 수 있다
+- 기억은 이 대화의 컨텍스트 윈도우다. 네 프로젝트에 대해 아는 건 이번 세션에 읽은 것, 그리고 `AGENTS.md`(아래)가 전부다
+- 권한: 명령을 실행하거나 프로젝트 밖 파일을 건드리기 전에 물어본다. 명령을 읽어라. 말이 되면 승인. "Allow all"은 나중에
+
+**에이전트와 일하는 법**
+
+- 원하는 걸 구체적으로 말해라. "App Router"라고 말하고, 어느 파일인지 말하고, 에러를 붙여넣어라
+- 믿기 전에 뭘 바꿨는지 읽어라: `git diff`. 버리려면 `git restore .`, 남기려면 `git commit`
+- 한 번에 한 가지. 작은 단계로, 매번 브라우저에서 확인
+- 레포의 `AGENTS.md`가 에이전트에게 이 프로젝트의 규칙을 알려준다. 다음 블록
+
+**<Term id="harness">하네스</Term> 엔지니어링**
+
+- 모델은 모두에게 같다. *네 프로젝트에서* 에이전트를 잘 돌게 하는 건 모델 주변의 모든 것, **하네스**다
+- 하네스란: 처음에 읽는 규칙(<Term id="agentsMd" />), 안내받는 가이드(`docs/`), 남기고 가는 기억(실험마다 `README.md` 하나), 통과해야 하는 검사(`pnpm typecheck`, `pnpm build`, 브라우저에서 라우트 열기), 저장하는 체크포인트(되면 `git commit`)
+- 하네스가 없으면 에이전트는 추측한다: 엉뚱한 폴더, 시키지도 않은 Tailwind, 2023년의 Pages Router, 페이지를 열어보지도 않고 "됩니다". 있으면 매번 같은 일을 같은 방식으로 한다
+- 2026년 10월 현재: `AGENTS.md`가 회사를 가로지르는 표준이다 (Codex, Claude Code, Cursor, Gemini 전부 읽는다; [agents.md](https://agents.md/)). Next.js는 자기 블록을 거기에 써넣는다. 그 위에: 훅(수정할 때마다 타입체크), 스킬(재사용 절차), MCP(브라우저 같은 도구). 이제 프롬프트보다 하네스가 더 큰 레버다
+- 이 템플릿에는 하네스가 들어 있다. `AGENTS.md`와 `docs/`를 한 번 읽어라. 에이전트는 매 세션 읽는다. 같은 실수를 반복하면 프롬프트가 아니라 하네스를 고쳐라
+
+**브라우저 도구: Claude in Chrome**
+
+- 에이전트는 코드를 쓴다. 브라우저가 없으면 네 페이지를 볼 수 없다. 확장(아래 셋업)이 있으면 직접 Chrome을 연다: http://localhost:3000 로 가고, 스크린샷을 찍고, 콘솔 에러를 읽고, 클릭하고, 입력하고, 스크롤한다
+- 이게 루프를 닫는다: 고치기 → 라우트 열기 → 보기 → 콘솔 읽기 → 고치기 → 다시 보기. 없으면 에이전트는 "될 겁니다"라고 한다. 있으면 확인한다
+- 이렇게 시켜라: "localhost:3000/experiments/w1/time-interval 열고, 콘솔 에러 확인하고, 뭐가 보이는지 말해줘". 고친 다음엔: "페이지 열어서 원이 마우스를 따라오는지 확인해"
+- 눈에 보이는 Chrome 창에서 돈다. 클릭 하나하나 네가 본다. 로그인된 사이트도 보이니까, 신경 쓰이면 수업용 Chrome 프로필을 따로 만들어라
+- VS Code 채팅 패널에서는 `@browser`를 치면 브라우저를 넘긴다. 터미널에서는 `/chrome`이 상태를 보여주고, 끊기면 다시 연결한다
+- 문서: [Claude Code with Chrome](https://code.claude.com/docs/en/chrome)
+
+**셋업: Claude in Chrome (같이 한다)**
+
+1. Chrome에 [Claude in Chrome](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) 확장 설치 (Brave, Edge, Arc도 됨). Claude Code와 같은 계정으로 로그인
+2. Claude Code 터미널에 `/chrome` 입력 후 **Enabled by default** 켜기. 상태에 "Extension: Installed"가 보여야 한다
+3. 말해라: "localhost:3000 열고 뭐가 보이는지 말해줘". Chrome이 알아서 탭을 연다
+
+## 2. 프론트엔드 지형 [#2-the-frontend-landscape]
+
+우리가 쓰는 도구가 어디에 놓이는지. 튜토리얼, 채용 공고, 에이전트의 제안이 이해되도록.
+
+<StackDiagram />
+
+- 기초: <Term id="html" />, <Term id="css" />, <Term id="javascript" />. 아래 전부가 결국 이 셋으로 변환된다
+- 그 위의 언어: <Term id="typescript" />. 타입이 있는 Javascript. 지금 업계가 쓰는 것
+- UI 프레임워크 (컴포넌트 모델, 상태 → 화면)
+  - <Term id="react" /> (Meta) — 표준. 우리가 쓰는 것
+  - <Term id="vue" />, <Term id="svelte" />, <Term id="angular" /> — 같은 일, 다른 문법과 철학
+- 메타 프레임워크 (UI 프레임워크 위에 라우팅, 서버, 빌드)
+  - <Term id="nextjs" /> (Vercel, React 위) — 우리가 쓰는 것
+  - <Term id="reactRouter" />, <Term id="astro" />, <Term id="nuxt" /> (Vue), <Term id="sveltekit" /> (Svelte)
+- 스타일링
+  - <Term id="cssModules" /> — 우리가 쓰는 것. 평범한 CSS, 파일 단위 스코프
+  - <Term id="tailwind" /> (유틸리티 클래스), <Term id="styledComponents" /> (CSS-in-JS), <Term id="sass" />
+- 런타임과 패키지 (우리의 파이프라인)
+  - <Term id="nodejs" />가 브라우저 밖에서 Javascript를 돌린다. `pnpm dev`와 소켓 relay가 그 위에서 돈다
+  - 패키지는 <Term id="npmRegistry">npm 레지스트리</Term>에서 온다. <Term id="npm" />, <Term id="yarn" />, <Term id="pnpm" />은 거기서 설치하는 세 가지 도구. 우리는 pnpm
+- 이 모든 것 위의 크리에이티브 레이어
+  - 2D는 <Term id="canvas" />와 <Term id="svg" />, 미대용 래퍼로 <Term id="p5js" />
+  - GPU는 <Term id="webgl" />과 <Term id="webgpu" />, 그 위에 <Term id="threejs" />, 그 안에 <Term id="glsl" />
+  - 소리는 <Term id="webAudio" />, 실시간은 <Term id="websocket" />
+
+## 3. Next.js란? [#3-what-is-nextjs]
+
+<ImageRow
+  logos
+  items={[
+    { src: "/lecture-materials/w1/logo-react.svg", alt: "React", caption: "React", href: "https://react.dev/" },
+    { src: "/lecture-materials/w1/logo-nextjs.svg", alt: "Next.js", caption: "Next.js", href: "https://nextjs.org/" },
+  ]}
+/>
+
+1. <Term id="react" />: Meta가 만든 최신 프론트엔드 프레임워크
+2. React의 한계: 프론트엔드 전용, 비교적 저수준/너무 단순
+3. <Term id="nextjs" />의 등장: React 기반 + <Term id="ssr">서버 사이드 렌더링</Term> + <Term id="seo" /> + 기타 최적화…
+4. Next.js: <Term id="appRouter" /> vs. Pages Router
+   1. App Router: Next.js 13+, `app/` 디렉토리, 기본이 Server Component
+   2. Pages Router: 옛 방식, `pages/` 디렉토리, 클라이언트 우선 로직
+   3. 우리는 App Router를 쓴다
+   4. 주의: 튜토리얼이나 검색 결과를 볼 때 그 코드가 App Router인지 Pages Router인지 꼭 확인해라. LLM도 둘을 섞는다. 프롬프트에 "App Router"라고 써라
+
+## 4. 패키지 매니저 [#4-package-manager]
+
+Node와 pnpm은 [Prelim](/lecture-materials/prelim#tutorial-hw)에서 이미 설치했다. 그게 뭔지 보자.
+
+<ImageRow
+  logos
+  items={[
+    { src: "/lecture-materials/w1/logo-npm.svg", alt: "npm", caption: "npm", href: "https://www.npmjs.com/" },
+    { src: "/lecture-materials/w1/logo-yarn.svg", alt: "yarn", caption: "yarn", href: "https://yarnpkg.com/" },
+    { src: "/lecture-materials/w1/logo-pnpm.svg", alt: "pnpm", caption: "pnpm (우리 것)", href: "https://pnpm.io/" },
+  ]}
+/>
+
+1. <Term id="packageManager" />란?
+   1. 패키지: 남이 대신 써둔 코드
+   2. 패키지 매니저로 여러 '패키지'를 내려받는다
+   3. 예: <Term id="threejs" />, <Term id="tonejs" />, <Term id="socketio" />, …
+2. <Term id="npm" /> vs. <Term id="yarn" /> vs. <Term id="pnpm" />
+   1. npm: 기본, 무거움
+   2. yarn: 더 가벼움
+   3. **pnpm: 빠르고 디스크를 아끼는 패키지 매니저**
+      1. **pnpm을 쓰자**
+3. 터미널 명령
+   1. `pnpm install`
+      1. package.json에 적힌 패키지를 전부 설치
+   2. `pnpm add <패키지 이름>`
+      1. 지정한 패키지를 설치
+   3. `pnpm dev`
+      1. localhost를 켠다. 이제 코딩할 준비 끝!
+
+## 5. 새 Next.js 앱 만들기 [#5-create-a-new-nextjs-app]
+
+오늘은 두 단계, 이 순서로. 먼저 맨땅에서 빈 앱, 그다음 내 템플릿. 그래야 빈 Next.js 앱이 뭔지, 템플릿이 그 위에 뭘 더했는지 안다.
+
+**1단계. VS Code와 터미널 열기**
+
+1. VS Code를 연다. File → Open Folder… → 프로젝트를 모아둘 폴더를 고른다(없으면 만든다). 예: `Documents/code`. 이 워크숍의 모든 프로젝트가 이 폴더 안에 산다
+2. VS Code 안에서 터미널을 연다: 메뉴 **Terminal → New Terminal**, 또는 단축키 `` Ctrl+` `` (`1` 왼쪽 키). 아래에 패널이 열린다. 그게 명령줄이고, 이미 방금 연 폴더를 가리키고 있다
+3. 거기 뭔가를 치고 Enter를 누르면 네 컴퓨터에서 실행된다. 아래 전부가 이 패널에서 일어난다
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/vscode-terminal-dropdown.png", alt: "VS Code Terminal 메뉴", caption: "Terminal → New Terminal (이미지: VS Code 문서, CC BY 4.0)", href: "https://code.visualstudio.com/docs/terminal/basics" },
+    { src: "/lecture-materials/w1/vscode-integrated-terminal.png", alt: "VS Code 통합 터미널", caption: "아래쪽 터미널 패널", href: "https://code.visualstudio.com/docs/terminal/basics" },
+  ]}
+/>
+
+**2단계. 앱 만들기**
+
+1. `pnpm create next-app@latest`를 치고 Enter
+   - `pnpm create` → "프로젝트 생성기를 돌려라"; `next-app@latest` → "Next.js 것, 최신 버전으로". pnpm이 내려받아 실행한다
+2. 질문 몇 개가 나온다. 화살표로 고르고 Enter로 확정
+
+```
+✔ What is your project named? … scratch
+✔ Would you like to use the recommended Next.js defaults? › Yes, use recommended defaults
+```
+
+   - 이름: `scratch` (아무거나). 그다음 **Yes, use recommended defaults**: TypeScript, ESLint, App Router, Tailwind, AGENTS.md. 끝
+3. `Success! Created scratch at …`가 찍힌다. 왼쪽 파일 패널에 `scratch/` 폴더가 생겼고, 패키지도 이미 설치돼 있다
+4. 문서: [create-next-app](https://nextjs.org/docs/app/api-reference/cli/create-next-app)
+
+**3단계. 켜기**
+
+1. 새 폴더를 새 창에서 연다: **File → New Window**, 그 창에서 **File → Open Folder… → `scratch`**. 그다음 **Terminal → New Terminal**. 창 하나 = 프로젝트 하나 = 그 폴더를 가리키는 터미널 하나. 항상 이렇게 해라. 터미널 하나에서 `cd`로 돌아다니지 마라
+2. `pnpm dev` → "package.json의 dev라는 스크립트를 실행해라". 그 스크립트가 `next dev`다. 개발 서버를 켜서, 페이지를 즉석에서 만들고, 파일을 저장할 때마다 브라우저를 새로고침한다. 이렇게 보인다:
+
+```
+▲ Next.js 16.4.0 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.12:3000
+✓ Ready in 241ms
+```
+
+   - `Local: http://localhost:3000`이 주소다. `localhost` = 이 컴퓨터, `3000` = 서버가 듣는 포트
+   - 터미널은 이제 서버를 돌리느라 바쁘다. 그냥 둬라. `Ctrl+C`로 끈다. 다른 명령을 치려면 터미널 패널의 `+`로 두 번째 터미널을 연다
+3. Chrome에서 http://localhost:3000을 연다. Next.js 환영 페이지가 뜬다
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/scratch-welcome.jpg", alt: "Next.js 환영 페이지", caption: "pnpm dev 직후의 localhost:3000" },
+  ]}
+  wide
+/>
+
+**Hello World~! (scratch)**
+
+1. 저 페이지는 어디서 오나? 파일 패널에서 `scratch/app/page.tsx`를 연다. 그 파일이 *곧* localhost:3000이다
+   - `app/page.tsx` → `/`에서 보이는 것
+   - `app/layout.tsx` → 모든 페이지를 감싸는 틀 (html, body, 폰트). 거의 안 건드린다
+   - `app/globals.css` → 사이트 전체 스타일
+   - `package.json` → 패키지 목록과 `dev` / `build` 스크립트. `pnpm dev`가 이걸 읽는다
+   - 그게 전부다
+2. `app/page.tsx`의 내용을 전부 이걸로 바꾸고 저장한다 (`Cmd+S` / `Ctrl+S`):
+
+```tsx
+export default function Home() {
+  return (
+    <main style={{ padding: "4rem", fontFamily: "sans-serif" }}>
+      <h1>Hello World~!</h1>
+      <p>This is app/page.tsx. Change this text and save.</p>
+    </main>
+  );
+}
+```
+
+   - 페이지는 HTML처럼 생긴 코드(JSX)를 돌려주는 함수다. `export default`는 "이게 페이지다"라는 뜻
+   - 브라우저가 알아서 바뀐다. 새로고침도, 재시작도 없다
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/scratch-hello.jpg", alt: "Hello World 페이지", caption: "page.tsx 저장 후" },
+  ]}
+  wide
+/>
+
+3. 두 번째 페이지 만들기. 새 폴더 `app/hello/`, 새 파일 `app/hello/page.tsx`:
+
+```tsx
+export default function Hello() {
+  return <h1>Hello</h1>;
+}
+```
+
+   - http://localhost:3000/hello를 연다. `app/` 안에서 `page.tsx`가 들어 있는 폴더는 전부 URL이 된다. 폴더 이름 = URL
+4. 이제 http://localhost:3000/anything-else를 열어봐라. 404가 뜬다: "This page could not be found". `page.tsx`가 없는 URL은 전부 이렇게 보인다. 코드 에러가 아니라, 아직 거기 페이지가 없는 것
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/scratch-404.jpg", alt: "Next.js 404 페이지", caption: "page.tsx가 없는 URL" },
+  ]}
+  wide
+/>
+
+5. 터미널에서 `Ctrl+C`로 서버를 끈다
+
+## 6. ID412 워크숍 템플릿 사용 [#6-use-the-id412-workshop-template]
+
+이제 템플릿. 기본 뼈대(방금 만든 것과 같은 앱, 거기에 이 노트와 실험용 폴더)와 에이전트 세팅(`AGENTS.md`, `docs/`)을 내가 미리 해둔 레포다. 수업 중에는 이걸 따라간다.
+
+내 컴퓨터에 가져오는 방법은 둘이다. **방법 A**는 손으로, 모든 단계를 한 번은 직접 보라고. **방법 B**는 같은 단계를 에이전트에게 맡기는 것. 오늘은 A로 하고, 앞으로는 B를 써도 된다.
+
+**방법 A · 1단계. GitHub에 내 사본 만들기**
+
+1. GitHub에 로그인한 채로 https://github.com/jeanyoon-choi/id412-2026 을 연다
+2. 초록 버튼 **Use this template** → **Create a new repository**
+3. Repository name: `id412-yourname`. Public이든 Private이든 상관없다. **Create repository**
+4. 이제 `github.com/YOURNAME/id412-yourname`이 생겼다. 네 것이고, 내 것과 연결돼 있지 않다
+
+**방법 A · 2단계. 내 컴퓨터로 클론하기**
+
+1. **File → New Window**, 그다음 **File → Open Folder… → `Documents/code`** (프로젝트 폴더, `scratch`가 아니라). **Terminal → New Terminal**
+2. 네 GitHub 페이지에서 초록 **Code** 버튼 → HTTPS URL 복사. 그리고:
+
+```
+git clone https://github.com/YOURNAME/id412-yourname.git
+```
+
+   - `git clone` → "이 레포를 히스토리까지 통째로, 레포 이름의 새 폴더에 내려받아라"
+3. **File → New Window**, 그다음 **File → Open Folder… → `id412-yourname`**. **Terminal → New Terminal**. 앞으로는 이 창에서 작업한다
+4. `pnpm install` → `package.json`을 읽고, 적힌 패키지를 전부 `node_modules/`에 내려받는다. 처음엔 1분쯤 걸린다. 클론 직후 한 번, 그리고 `package.json`이 바뀔 때만 다시 한다
+5. `pnpm dev` → http://localhost:3000. 이 노트가 네 컴퓨터에서 뜬다
+6. `git remote -v` → 네 GitHub URL이 찍힌다. 클론은 이미 네 레포에 연결돼 있다. 나중에 `git push`하면 거기로 간다
+
+**방법 B · 에이전트에게 시키기**
+
+1단계(GitHub 사본)는 여전히 네가 클릭한다. 2단계의 2~5는 Claude Code가 해도 된다. 프로젝트 폴더를 연 창의 터미널에 `claude`를 치고, 이렇게 말한다:
+
+> https://github.com/YOURNAME/id412-yourname.git 을 이 폴더에 클론하고, pnpm으로 의존성을 설치하고, 실행하는 명령을 알려줘.
+
+같은 명령을 실행하면서 하나하나 보여준다. 명령 실행 허가를 물으면, 명령을 읽고, 승인해라.
+
+**Hello World~! (템플릿)**
+
+1. localhost:3000 → 이 노트의 인덱스. 아까와 같은 `app/page.tsx`, 내용만 다르다
+2. http://localhost:3000/experiments/w1/time-interval → 첫 실험. 어디에 뭐가 가는지 보라고 레포에 미리 넣어뒀다
+3. http://localhost:3000/anything-else → 404 페이지. 템플릿은 `app/not-found.tsx`에 자기 것이 있다
+4. 각 디렉토리는 뭘 하나?
+   1. `app/` → 라우트/페이지를 다루는 곳. 대부분의 일이 여기서 일어난다
+      1. `app/lecture-materials/` → 이 노트. 건드리지 않는다
+      2. `app/experiments/w1/`, `w2/`, `w3/` → 수업 중 코딩, 실험 하나당 폴더 하나. 여기가 네 자리다
+      3. `app/final/` → 네 기말 프로젝트
+      4. `app/api/` → 서버 사이드 API 호출 (W3)
+   2. `hooks/` → React 커스텀 훅 (`hooks/shared/useSocket.ts`, W2)
+   3. `public/` → 에셋 보관 (이미지, 비디오, 3D 모델)
+   4. `docs/` → 너와 에이전트를 위한 가이드. `AGENTS.md` → 에이전트의 규칙
+   5. `node_modules/` → pnpm이 내려받은 패키지 코드. 고치지도, 커밋하지도 않는다
+5. 코드 구조
+   1. 실험 폴더마다 `page.tsx`와 `*.module.css`
+      1. `page.tsx`: 로직과 JSX 컴포넌트
+      2. `*.module.css`: <Term id="cssModules" /> 스타일링
+   2. state, effect, 이벤트, 브라우저 API를 쓰면 첫 줄에 `"use client"`
+   3. 파일은 <Term id="typescript" />(`.tsx`)다
+6. 기말은 두 가지 다 된다: 이 템플릿의 `app/final/` 안에서 키우거나, 맨땅에서 새 앱을 만들어(5절) 필요한 것만 옮겨오거나. 이제 둘 다 할 줄 안다
+
+## 7. 수업에서 실습하는 방식 [#7-how-we-work-in-class]
+
+- 코드를 따로 주지 않는다. Claude Code를 같이 켜고, 빈 폴더에서 실험 하나하나를 현장에서 새로 만든다. 너도 네 노트북에서 동시에 똑같이 한다
+- 루프: 설명한다 → 에이전트가 만든다 → 본다 → 뭐가 틀렸는지 말한다 → 반복
+- 실험 하나 = 폴더 하나: `app/experiments/w1/<kebab-name>/`. 하는 일을 따서 이름 짓는다 (`time-interval`, `mouse-trail`). `test1`은 안 된다
+  - 안에 `page.tsx` (+ `page.module.css`). 헬퍼는 옆에. 에셋은 `public/experiments/w1/<kebab-name>/`
+  - 에이전트가 폴더에 짧은 `README.md`를 쓴다: 뭔지, 입력, 파라미터, 실행법. 규칙은 `docs/experiments/README.md`에 있고 에이전트는 `AGENTS.md`로 그걸 안다
+- 모든 실험을 시작하는 프롬프트는 대충 이렇다: "`app/experiments/w1/<name>`에 화면 꽉 채운 캔버스를 만들고 ...". 그다음 localhost:3000/experiments/w1/name을 보면서 대화한다
+- 변형은 새 폴더다 (`mouse-trail-2`). 고치지 않는다. 끝난 실험은 기록으로 남긴다
+- 실험이 돌아갈 때마다: `git add .` → `git commit -m "w1: <name>"`. 위험한 변경 전에: 커밋. 에이전트가 망가뜨리면: `git restore .`
+- 뒤처지면 본 것을 네 말로 에이전트에게 만들게 해라
+
+## 8. 코딩 시작 [#8-lets-start-coding]
+
+**Bottom-up 팅커링**
+
+- 나중에 기말이나 큰 프로젝트를 할 때는 top-down이 필요하다. 컨셉 먼저, 시스템, 그다음 부품. 거기까지 간다
+- 하지만 지금은 처음이고 받아들일 게 많다. 그래서 이번 주는 bottom-up이다. 작고 귀여운 실험, 하나에 아이디어 하나, 하나에 10분
+- 목표는 감을 잡는 것. 캔버스가 뭘 할 수 있는지, 시간이 뭘 하는지, 마우스가 뭘 하는지, 이미지 그리드가 뭘 하는지
+- 각 실험에서 가져갈 건 코드가 아니다. 마음에 든 질감, 움직임, 구성, 미감이다. 적어둬라. 진짜 작업을 설계할 때 네 레퍼런스가 된다
+
+이제 코딩 시작! 대부분은 <Term id="canvas" />나 평범한 HTML 요소 위에 그린다. 하나하나가 `app/experiments/w1/`의 폴더다.
+
+**Time interval**
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/time-interval.jpg", alt: "타임 인터벌 실험", caption: "/experiments/w1/time-interval, 레포에 있음", href: "/experiments/w1/time-interval" },
+  ]}
+/>
+
+1. 단순 타임 인터벌 (localhost:3000/experiments/w1/time-interval). 이건 템플릿에 이미 있다: `app/experiments/w1/time-interval/`을 열고 `README.md`, `page.tsx`, `page.module.css`를 읽어라. 앞으로 모든 실험이 이 모양이다
+2. 미야지마 타츠오 풍 타임 인터벌 [LINK](https://www.mca.com.au/exhibitions/tatsuo-miyajima-connecting-with-everything/)
+
+**Mouse move**
+
+1. 단순 마우스 무브 비주얼
+2. 단순 가오나시
+3. 무서운 가오나시
+4. 제임스 터렐 풍 인터랙션 [LINK](https://www.pacegallery.com/artists/james-turrell/)
+
+**Image**
+
+1. 이미지 하나
+2. 이미지 여러 개
+3. 그리드 이미지
+4. 겹친 이미지
+5. 카오스 이미지
+
+**Video**
+
+1. 단순 YouTube iframe (김범 [LINK](https://www.youtube.com/watch?v=1SwA46-lSWk&t=530s))
+2. 시작 시간을 지정한 YouTube iframe
+3. YouTube 여러 개
+4. 겹친 YouTube
+
+**Data**
+
+1. 단순 데이터 호출
+2. 날짜가 있는 데이터
+3. 단순 데이터 시각화
+
+**Word-puzzle (Beta)**
+
+1. 단순 워드 퍼즐
+2. 실험적 타이포그래피
+
+## 9. Canvas [#9-canvas]
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/canvas-sota-backend.jpg", alt: "SoTA 백엔드: LLM 토큰 상호유사도를 그린 흑백 선", caption: "SoTA (2024), 백엔드: 관객이 떠나면 화면이 LLM 토큰 상호유사도의 흑백 선으로 바뀐다. 브라우저에서 그렸다 (이건 SVG. Canvas는 같은 일을 픽셀로 한다)", href: "https://www.xdlab.net/projects/sota" },
+  ]}
+  wide
+/>
+
+- <Term id="canvas" />란?
+  - 비트맵인 HTML 요소. Javascript에서 그린다: `getContext("2d")`, 그다음 `fillRect`, `arc`, `lineTo`, `drawImage`
+  - 아무것도 기억하지 않는다. 매 프레임 지우고 다시 그린다. 루프는 `requestAnimationFrame`
+  - Canvas vs <Term id="svg" />: SVG는 DOM 안의 도형, 선명하고 CSS로 꾸밀 수 있고, 수백 개까지는 괜찮다. Canvas는 픽셀: 수천 개를, 매 프레임
+- React에서: `useRef`로 요소를 잡고, `useEffect`에서 루프를 시작하고 cleanup에서 취소, 크기는 `innerWidth/innerHeight` × `devicePixelRatio`
+- 파라미터: 시간과 마우스. 다음의 GLSL과 같다. 차이: Canvas는 CPU에서 도형을 하나씩 그리고, GLSL은 GPU에서 모든 픽셀을 한 번에 계산한다
+- 레퍼런스
+  - MDN Canvas 튜토리얼 [LINK](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial)
+  - The Nature of Code (Daniel Shiffman) [LINK](https://natureofcode.com/)
+
+## 10. GLSL [#10-glsl]
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/glsl-face-voronoi.jpg", alt: "Face Voronoi, GLSL 실험", caption: "프래그먼트 셰이더 하나: 색상으로 그린 보로노이 필드, 모든 픽셀을 GPU가 계산" },
+  ]}
+  wide
+/>
+
+- <Term id="glsl" />이란?
+  - OpenGL Shading Language: GPU에서 도는 작은 C 계열 언어. Javascript가 아니다
+  - 프로그램이 정점마다 한 번(버텍스 셰이더), 픽셀마다 한 번(프래그먼트 셰이더), 전부 병렬로 실행된다
+  - 프래그먼트 셰이더: 픽셀 좌표(그리고 시간, 마우스, …)를 받아 색을 돌려준다. 그게 전부다
+  - 수천 개 픽셀을 한 번에 → Canvas 루프에서 너무 느린 것들이 공짜가 된다
+- Three.js와는 어떻게 연결되나?
+  - <Term id="shaderMaterial" />: 버텍스/프래그먼트 셰이더를 직접 쓰는 머티리얼
+  - <Term id="uniforms" />: 매 프레임 Javascript에서 셰이더로 넘기는 값 (시간, 마우스, 해상도, …)
+  - 화면 꽉 채운 평면 하나 + 프래그먼트 셰이더 = GPU가 그리는 2D 캔버스
+- 무엇에 좋은가?
+  - 픽셀 단위 필드: 그라데이션, 노이즈, 흐름, 거리 필드, 블러, 피드백
+  - 대량의 파티클 / 인스턴스
+  - 후처리: 프레임 전체에 거는 효과
+- 안 맞는 것: 레이아웃, 텍스트, UI 로직. 그건 React/CSS에 맡겨라
+- 레퍼런스
+  - The Book of Shaders [LINK](https://thebookofshaders.com/)
+  - Shadertoy [LINK](https://www.shadertoy.com/)
+  - Three.js ShaderMaterial [LINK](https://threejs.org/docs/#api/en/materials/ShaderMaterial)
+
+**GLSL 예제**
+
+1. Hello Fragment Shader: uv로 색 만들기
+2. time & mouse uniform
+3. 노이즈 필드
+4. 피드백
+
+## 11. Three.js [#11-threejs]
+
+<ImageRow
+  logos
+  items={[
+    { src: "/lecture-materials/w1/logo-threejs.svg", alt: "Three.js", caption: "Three.js", href: "https://threejs.org/" },
+    { src: "/lecture-materials/w1/logo-react.svg", alt: "React Three Fiber", caption: "+ React Three Fiber", href: "https://r3f.docs.pmnd.rs/" },
+  ]}
+/>
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/w1/threejs-banpo-xism.jpg", alt: "반포자이즘, 미디어 월의 3D 아파트 필드 매니폴드", caption: "Banpo-Xism 반포자이즘 (2026), 미디어 월: 3D 아파트 필드 매니폴드, Three.js", href: "https://banpo-xism.vercel.app/" },
+  ]}
+  wide
+/>
+
+- <Term id="threejs" />란?
+  - Javascript 3D 라이브러리
+  - 3D + Javascript, 웹 3D, 오픈소스(무료!), 코딩 기반
+  - 인터랙티브, 접근 쉬움, 기성 3D 모델과 결합 가능
+  - Vanilla Three.js = Vanilla Javascript + Three.js
+    - 즉 React Three를 안 쓰는 것
+    - 가능하지만 코드가 길어지고 React 로직과 안 묶인다
+- React-Three란?
+  - Three.js를 React 방식으로 효율적으로 쓰기 위한 프레임워크/통합 전략 묶음
+  - **<Term id="r3f">React-Three Fiber</Term>:** Three.js용 React 렌더러 [LINK](https://r3f.docs.pmnd.rs/getting-started/introduction)
+    - https://codesandbox.io/p/sandbox/5g22g7
+  - **<Term id="drei">React-Three Drei</Term>:** 바로 쓰는 유틸/헬퍼 모음 [LINK](https://github.com/pmndrs/drei)
+  - <Term id="postprocessing">React-Three Postprocessing</Term>: 후처리 효과 [LINK](https://github.com/pmndrs/react-postprocessing)
+  - <Term id="rapier">React-Three Rapier</Term>/Cannon: 물리 라이브러리 [LINK](https://github.com/pmndrs/react-three-rapier)
+  - React-Three 통합은 아니지만, <Term id="reactSpring">React Spring</Term> (애니메이션 라이브러리) [LINK](https://www.react-spring.dev/)
+- 왜 Three.js인가?
+  - Cinema 4D: 정적인 3D 영상, GUI 기반, 접근성 높음, 인터랙티브 낮음
+  - Unity: 인터랙티브 3D 게임, GUI + C# 코딩, 접근성 낮음, 인터랙티브 높음
+  - Three.js: 인터랙티브 웹 3D 환경, Javascript 코딩, 접근성 중간, 인터랙티브 중간
+  - Three.js를 쓸 때
+    - 인터랙티브 웹
+    - 통합된 웹
+    - 접근 쉬운 데모 (설치 없음)
+    - '와우' 효과
+    - 웹의 미래 / WebXR
+- 좋은 Three.js 예제/레퍼런스
+  - Three.js 레퍼런스 [LINK](https://threejs.org/examples/)
+  - React-Three Fiber 레퍼런스 [LINK](https://r3f.docs.pmnd.rs/getting-started/examples)
+  - 웹 아트 & 실험
+    - Google A&C Heartbeat of the Earth [LINK](https://experiments.withgoogle.com/collection/heartbeat-earth)
+    - The WebGL Globe, GitHub Contribution Graph (3D 데이터 시각화)
+  - 포트폴리오: Active Theory (파티클), Bruno Simon (자동차)
+- 좋은 Three.js 튜토리얼
+  - 무료
+    - Wawa Sensei [LINK](https://www.youtube.com/watch?v=pXpckHDDNYo&list=PLpepLKamtPjiUF6PvVUbIFhx9HaS0qJs_)
+    - YouTube에 튜토리얼이 넘친다
+  - 유료
+    - Three.js Journey [LINK](https://threejs-journey.com/)
+    - Wawa Sensei [LINK](https://wawasensei.dev/)
+
+**셋업 & 프리미티브: 맨땅에서 코딩하기**
+
+1. Hello Three.js: 큐브 만들기
+2. 조명 추가
+3. 씬 돌아다니기
+   1. OrbitControls, <Term id="drei">@react-three/drei</Term>
+4. 다른 지오메트리? 박스, 구, 원기둥, 원뿔?
+   1. 더 많은 지오메트리: [LINK](https://threejs.org/docs/#api/en/geometries/BoxGeometry)
+   2. 주의: 이건 Vanilla Three.js 문서지 React-Three 로직이 아니다
+5. 다른 머티리얼? MeshBasic? MeshNormal? MeshStandard?
+   1. 더 많은 머티리얼: [LINK](https://threejs.org/docs/#api/en/materials/MeshBasicMaterial) [LINK2](https://chriscourses.com/blog/a-comprehensive-guide-to-materials-in-threejs)
+   2. 주의: 이건 Vanilla Three.js 문서지 React-Three 로직이 아니다
+6. 메시 여러 개
+   1. 힌트: `new Array(n).fill(0).map((_, i) => ...)`
+   2. 아니면 에이전트에게
+7. 애니메이션
+   1. @react-three/fiber의 useFrame
+8. 커스텀 3D 모델 불러오기
+   1. Gltf-2-jsx [LINK](https://gltf.pmnd.rs/)
+9. 환경 맵
+
+## 12. 배포 [#12-deployment]
+
+<ImageRow
+  logos
+  items={[
+    { src: "/lecture-materials/w1/logo-vercel.svg", alt: "Vercel", caption: "Vercel", href: "https://vercel.com/" },
+  ]}
+/>
+
+1. 배포: localhost에서 짠 웹앱을 전 세계에서 접속 가능하게 만드는 것!
+2. Next.js → <Term id="vercel" />로 쉬운 배포
+3. Vercel 가입 https://vercel.com/
+4. 먼저 코드를 GitHub에 올려야 한다. VS Code 터미널에서
+   1. `git add .`
+   2. `git commit -m "Update"`
+   3. `git push`
+5. 이제 GitHub의 레포가 최신 상태다
+6. Vercel로 https://vercel.com/
+7. Add New > Project > Import Git Repository > 'Import' > **Framework Preset을 Next.js로 >** Deploy
+8. 짠!
+9. 이제부터 `git push`할 때마다 다시 배포된다
+
+## 13. 과제: 웹 과제 1 [#13-homework-web-assignment-1]
+
+**크리에이티브 코딩 경험 만들기.** 성적에 안 들어간다. 꼭 필요하다. Web 2 (11/2)까지.
+
+1. 단일 디바이스 경험 하나, 이 레포에, Vercel에 배포
+   - `app/experiments/w1/<name>/page.tsx`. Canvas, GLSL, Three.js 중 선택. 셋 다여도 됨
+   - 시간에 따라 변하거나 입력(마우스, 키보드, 스크롤, 마이크, 카메라)에 반응해야 한다
+2. 파라미터로 생각하기
+   - 네 비주얼이 가진 파라미터 3~5개를 적어라. 그중 최소 둘을 입력에 연결해라

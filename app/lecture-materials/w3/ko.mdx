@@ -1,0 +1,88 @@
+import { Term } from "@/app/lecture-materials/components/term/term";
+
+# W3
+
+3주차. 시스템 통합 (API, 사운드, 모바일, Unreal)
+
+## 1. API 소개 [#1-api-introduction]
+
+- <Term id="api" />란?
+  - 컴퓨터 사이, 혹은 프로그램 사이의 연결. 다른 소프트웨어에 서비스를 제공하는 소프트웨어 인터페이스의 한 종류. - Wikipedia
+- 여러 종류의 API
+  - OpenAI API, Anthropic API (Claude)
+  - Replicate API
+  - Microsoft Azure/AWS/Google Cloud
+- Next.js와의 통합
+  - App Router: <Term id="routeHandler">Route Handler</Term> [LINK](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)
+    - Route Handler란: 별도 백엔드 서버 없이 Next.js 안에 서버 로직을 바로 만드는 것
+    - `app/api/<name>/route.ts` → 페이지에서 `fetch("/api/<name>")`
+    - 서버에서 돈다. API 키가 브라우저에 절대 안 간다
+    - Route Handler는 Vercel에 배포된다 (소켓 relay와 달리)
+
+## 2. LLM API [#2-llm-api]
+
+- 1단계. 가입하고 API 키 만들기
+  - OpenAI: https://platform.openai.com/api-keys
+  - Anthropic: https://platform.claude.com/
+  - 키는 각자 가져온다. 사용량은 각자 계정에 청구된다
+- 2단계. API 키를 <Term id="env">`.env.local`</Term>에 저장
+  - `.env.local`이란? 서버에서만 읽는 환경변수
+  - `NEXT_PUBLIC_` 접두사를 붙이지 마라. 그 접두사가 붙으면 브라우저로 나간다. 즉 공개된다
+- 3단계. `.gitignore` 확인: `.env*`는 이미 들어 있다. 키는 절대 커밋하면 안 된다
+- 4단계. 패키지 추가: `pnpm add openai` (또는 `pnpm add @anthropic-ai/sdk`)
+- 5단계. Route Handler에 API 코드 작성: `app/api/<name>/route.ts`
+- 6단계. 프론트엔드에서 fetch로 이 Route Handler 호출
+  - Route Handler와 통신하는 방법
+- 문서 읽기
+  - OpenAI: https://platform.openai.com/docs/overview
+  - Anthropic: https://platform.claude.com/docs
+- 다른 유용한 기능과 외부 라이브러리
+  - Tools & Structured Output
+  - 실시간 / 음성 API
+  - 이미지 생성
+  - Vercel AI SDK
+- LLM은 지금 거대한 더미다. 깊이 파볼 가치가 있다
+
+**LLM API 예제**
+
+1. 프롬프트 입력, 텍스트 출력
+2. 파라미터로서의 구조화 출력
+3. 모바일 프롬프트 → LLM → 스크린 (소켓 경유)
+
+## 3. 사운드: Tone.js [#3-sound-tonejs]
+
+- <Term id="webAudio" />: 브라우저의 오디오 엔진. 오실레이터, 샘플, 이펙트, 분석(볼륨, FFT)
+- <Term id="tonejs" />: Web Audio 위의 Javascript 라이브러리. 음악가 친화적 (Synth, Transport, Effect) [LINK](https://tonejs.github.io/)
+- 템플릿에 이미 설치됨: `tone`
+- 규칙
+  - 오디오는 사용자 제스처(탭/클릭) 뒤에만 시작된다: 이벤트 핸들러 안에서 `await Tone.start()`
+  - 마이크 입력은 HTTPS 필요 (W2 A3 참고)
+- 기말: 사운드 필수
+
+**사운드 예제**
+
+1. Hello Tone: 탭하면 나는 신스
+2. 파라미터 → 소리 (모바일 → 스크린)
+3. 마이크 → 파라미터
+
+## 4. <Term id="unreal" /> [#4-unreal]
+
+- 별도 레포: https://github.com/jeanyoon-choi/mobile-to-unreal-realtime-backbone
+  - 폰 → WebSocket → Node relay → UDP → UE 5.8 C++ 수신 액터
+  - 우리 소켓 relay와 같은 아이디어, 마지막 구간만 다르다: Unreal은 Socket.io가 아니라 UDP를 듣는다
+- 수업에서 단계별로 다루지 않는다. 기말이 Unreal과 Web을 합치면 README를 읽어라
+
+## 5. 이걸로 뭘 할 수 있나? [#5-what-can-you-do-with-this]
+
+## 6. 시스템과 인터랙션 [#6-system--interaction]
+
+## 7. 기말 [#7-final]
+
+- 이 템플릿 안(`app/final/`)에서 계속 만들어도 되고, 맨땅에서 새 앱을 만들어(W1 5절) 필요한 것만 옮겨와도 된다. 둘 다 괜찮다
+
+## 부록. 프로젝션 매핑 [#appendix-projection-mapping]
+
+- GitHub 레포 참고: https://github.com/jeanyoon-choi/xdlab-mapping
+- 이 레포의 iframe/링크는 쓰지 마라…
+  - iframe 임베딩은 매끄럽게 안 될 수 있다
+- 대신 네 Next.js 앱 안에 맞춤 페이지를 직접 만들어라

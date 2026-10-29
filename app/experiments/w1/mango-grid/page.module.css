@@ -1,0 +1,114 @@
+/* Black behind the grid */
+.container {
+  position: fixed;
+  inset: 0;
+  background: black;
+  overflow: hidden;
+}
+
+/* A grid that is exactly the size of the screen; columns and rows are set from page.tsx.
+   isolation: the blending happens between the mangos only, not with anything outside the grid. */
+.grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  isolation: isolate;
+}
+
+/* Each tile: flipped by --flip-x / --flip-y (set per tile in page.tsx), grown by --scale (set on the grid).
+   scale() grows it around the middle of its tile, so it stays in place and covers its neighbours. */
+.cell {
+  position: relative;
+  transform: scale(calc(var(--flip-x) * var(--scale, 1)), calc(var(--flip-y) * var(--scale, 1)));
+}
+
+/* cover: each tile is filled, the mango is cropped a little if the tile is stretched */
+.image {
+  object-fit: cover;
+}
+
+.credit {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  margin: 0;
+  padding: 2px 6px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.credit a {
+  color: inherit;
+}
+
+/* Options panel in the lower-right corner, same look as time-interval */
+.panel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  color: white;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.controls label {
+  display: grid;
+  grid-template-columns: 40px 120px 80px;
+  align-items: center;
+  gap: 8px;
+}
+
+.controls input[type="checkbox"] {
+  justify-self: start;
+  margin: 0;
+}
+
+.controls input:disabled {
+  opacity: 0.4;
+}
+
+.controls select {
+  font: inherit;
+  color: white;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+.toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: #888;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid #333;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.toggle:hover,
+.active {
+  color: white;
+  border-color: #777;
+}

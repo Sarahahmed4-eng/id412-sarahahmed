@@ -1,0 +1,16 @@
+.container {
+  position: fixed;
+  inset: 0;
+  background: black;
+}
+
+.caption {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  margin: 0;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}

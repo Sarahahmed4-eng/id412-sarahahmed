@@ -1,0 +1,88 @@
+import { Term } from "@/app/lecture-materials/components/term/term";
+
+# W3
+
+Week 3. Integrating System (API, Sound, Mobile, Unreal)
+
+## 1. API: Introduction
+
+- What is <Term id="api" />?
+  - An application programming interface is a connection between computers or between computer programs. It is a type of software interface, offering a service to other pieces of software. - Wikipedia
+- Various types of APIs
+  - OpenAI API, Anthropic API (Claude)
+  - Replicate API
+  - Microsoft Azure/AWS/Google Cloud
+- Integration with Next.js
+  - App Router: <Term id="routeHandler">Route Handlers</Term> [LINK](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)
+    - What is a Route Handler: Create Server-side logic directly in your Next.js without having to create a separate Backend Server
+    - `app/api/<name>/route.ts` → `fetch("/api/<name>")` from your page
+    - Runs on the server. Your API key never reaches the browser
+    - Route Handlers DO deploy to Vercel (unlike the socket relay)
+
+## 2. LLM API
+
+- Step 1. Register and create an API Key
+  - OpenAI: https://platform.openai.com/api-keys
+  - Anthropic: https://platform.claude.com/
+  - Bring your own key. Usage is billed to your account
+- Step 2. Store your API Key in <Term id="env">`.env.local`</Term>
+  - What is `.env.local`? Environment variables, read only on the server
+  - Do NOT prefix it with `NEXT_PUBLIC_`. Anything with that prefix is shipped to the browser, i.e. public
+- Step 3. Check `.gitignore`: `.env*` is already there. Your key must never be committed
+- Step 4. Add the package: `pnpm add openai` (or `pnpm add @anthropic-ai/sdk`)
+- Step 5. Write the API code in a Route Handler: `app/api/<name>/route.ts`
+- Step 6. On the frontend, call this Route Handler via fetch
+  - How you communicate with the Route Handler
+- Read Documentation
+  - OpenAI: https://platform.openai.com/docs/overview
+  - Anthropic: https://platform.claude.com/docs
+- Other Useful Functionalities & External Libraries
+  - Tools & Structured Output
+  - Realtime / voice APIs
+  - Image generation
+  - Vercel AI SDK
+- LLM is currently a big heap, worth digging deeper
+
+**LLM API examples**
+
+1. Prompt in, text out
+2. Structured output as parameters
+3. Mobile prompt → LLM → Screen (via socket)
+
+## 3. Sound: Tone.js
+
+- <Term id="webAudio" />: the browser's audio engine. Oscillators, samples, effects, analysis (volume, FFT)
+- <Term id="tonejs" />: Javascript library on top of Web Audio, musician-friendly (Synths, Transport, Effects) [LINK](https://tonejs.github.io/)
+- Already installed in the template: `tone`
+- Rules
+  - Audio starts only after a user gesture (tap/click): `await Tone.start()` inside an event handler
+  - Microphone input requires HTTPS (see W2 A3)
+- Final term: Sound is mandatory
+
+**Sound examples**
+
+1. Hello Tone: a synth on tap
+2. Parameter → sound (mobile → screen)
+3. Microphone → parameter
+
+## 4. <Term id="unreal" />
+
+- Separate repo: https://github.com/jeanyoon-choi/mobile-to-unreal-realtime-backbone
+  - Phone → WebSocket → Node relay → UDP → UE 5.8 C++ receiver actor
+  - Same idea as our socket relay, different last hop: Unreal listens to UDP, not Socket.io
+- Not covered in class step by step. Read the README if your final combines Unreal and Web
+
+## 5. What can you do with this?
+
+## 6. System & Interaction
+
+## 7. Final
+
+- You can keep building inside this template (`app/final/`) or start a fresh app from scratch (W1 §5) and bring over only what you need. Both are fine
+
+## Appendix. Projection Mapping
+
+- Refer to github repo: https://github.com/jeanyoon-choi/xdlab-mapping
+- Do not use the iframe/link from this repo…
+  - Iframe embedding might not work smoothly
+- Rather, build up the customised page in your own Next.js app

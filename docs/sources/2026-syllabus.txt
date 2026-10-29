@@ -1,0 +1,189 @@
+​Interactive Space [ID412]​
+
+
+                                                                                         ​ rofessor: Yiyun Kang​
+                                                                                         P
+                                                                                         ​TA : Jeanyoon Choi (XD Lab)​
+
+​Keywords​
+​ pace,​​Interaction​​|​​Interactive​​Media​​Art​​|​​camera​​Interaction​​|​​interactive​​narrative​​|​​real-time​​graphics​​|​
+S
+​Generative content​
+
+
+
+​Summary of Lecture​
+
+​ ver​ ​the​ ​past​ ​50​ ​years,​ ​interactions​ ​between​ ​humans,​ ​software,​ ​machines,​ ​and​ ​environments​ ​have​
+O
+​transformed​​how​​we​​create,​​experience,​​and​​understand​​space.​​Digital​​technologies​​now​​allow​​designers​
+ ​and​​artists​​to​​build​​expressive,​​participatory,​​and​​real-time​​media​​environments​​in​​which​​space​​responds​
+  ​to human action.​
+   ​This​ ​course​ ​explores​ ​interactive​ ​space​ ​as​ ​the​​design​​of​​relationships​​between​​user​​behaviour,​​real-time​
+    ​systems,​ ​and​ ​physical​ ​or​ ​digital​ ​environments.​ ​Students​ ​will​ ​study​ ​key​ ​critical​ ​concepts​ ​in​ ​interactive​
+     ​media,​ ​ranging​ ​from​ ​embodied​ ​interaction​ ​and​ ​spatial​ ​interfaces​ ​to​ ​camera-based​ ​input,​ ​data​
+      ​visualisation, generative content, and interactive narrative.​
+       ​As​ ​a​ ​final​ ​outcome,​ ​students​ ​will​​produce​​a​​creative​​project​​that​​demonstrates​​the​​technical,​​aesthetic,​
+        ​and​​conceptual​​dimensions​​of​​interactive​​space.​​The​​goal​​is​​to​​build​​a​​meaningful​​dialogue​​between​​user​
+         ​and​ ​space​ ​through​ ​interaction.​ ​Students​ ​will​ ​work​ ​both​ ​individually​ ​and​ ​collaboratively​ ​throughout​ ​the​
+          ​term.​
+
+
+
+
+​NOTE* Course Prerequisite​
+   ​1.​ ​Taking​ ​the​ ​'Immersive​ ​Space'​ ​course​ ​in​ ​the​ ​spring​​semester​​is​​recommended​​before​​taking​​this​
+           ​class.​
+    ​2.​ ​Priority enrollment is given to undergraduate students majoring in Industrial Design.​
+     ​3.​ ​Graduate students in Industrial Design are also given priority.​
+
+    ​ rerequisites​​:​​Participants​​should​​understand​​the​​basics​​of​​HTML,​​CSS,​​JavaScript,​​and​​React.​​If​​you​
+    P
+    ​are​​not​​familiar​​with​​these​​frontend​​coding​​frameworks,​​it​​is​​highly​​recommended​​to​​complete​​some​
+     ​basic JavaScript tutorials online beforehand.​
+
+
+​During this course, you will learn:​
+    ​1.​ ​Applying​ ​methods​ ​and​ ​technologies​ ​for​ ​creating​ ​audio-visual,​ ​interaction-based​ ​media​
+          ​environments.​
+    ​2.​ ​Conducting​ ​critical​ ​and​ ​contextual​ ​research​ ​on​ ​interactive​ ​projects,​ ​with​ ​attention​ ​to​ ​how​
+          ​interactivity​ ​connects​ ​content,​​user​​behaviour,​​real-time​​systems,​​social​​critique,​​and​​physical​​or​
+          ​digital space.​
+    ​3.​ ​Designing​ ​and​ ​prototyping​ ​creative​ ​and​ ​speculative​ ​real-time​ ​interactions​ ​that​ ​connect​ ​user​
+          ​behaviour, computational systems, and physical or digital space.​
+    ​4.​ ​Developing​ ​experimental​ ​game-engine-based,​​web-based,​​and​​vision-based​​interactive​​content​
+          ​for monitor, projection, and spatial installation settings.​
+​Software for teaching​
+  ​Unreal​​Engine,​​Web​​Technologies​​(Javascript,​​React.js,​​Next.js),​​Vibecoding​​Applications​​(Codex,​​Claude​
+ ​Code), etc​
+
+
+​Course Assignments​
+
+
+ ​ SSSIGN​ ​OBSERVATION​
+ A                                      ​Individual​ ●
+                                                     ​ ​ ​Topic:​​What is your favourite interactive space project?​
+ ​MENT​                                              ​●​ ​Format:​​Reference research and presentation​
+                                                      ​●​ ​Deliverables:​​A 15-minute presentation supported by​
+                                                           ​well-organised research, visual materials, and critical analysis.​
+
+ ​MID TERM​ ​GROUP PROJECT​ ​Group​                     ​ ​ ​Topic:​​Real-time interactive Storytelling​
+                                                        ●
+                                                        ​●​ ​Format:​​Unreal Engine-based interactive prototype​
+                                                         ​●​ ​Tool:​​Unreal Engine​
+                                                          ​●​ ​Deliverables:​​15 minutes long live demo with presentation.​
+
+ ​ INAL​
+ F                ​ PATIAL​
+                  S                     I​ndividual​ ●
+                                                     ​ ​ ​Topic:​ ​COACTIVITY​
+ ​TERM​           ​AUDIO-VISUAL​         ​or Group​ ​●​ ​Format:​​Interactive audio-visual installation (Sound mandatory).​
+                   ​INSTALLATION​                    ​●​ ​Interface:​​Custom-built environment​
+                                                      ​●​ ​Group or Independent project​
+                                                       ​●​ ​Tool:​​Unreal, Web​
+                                                        ​●​ ​Deliverables:​​Exhibition-level installation at the 1st-floor Black​
+                                                             ​Room and comprehensive process documentation (archival​
+                                                              ​quality).​
+
+
+
+​Lecture Schedule​
+
+ ​WEEK​ ​DATE​     ​ROOM​    ​AGENDA​                                ​NOTE​                    ​ASSIGNMENT​
+
+   ​1​ ​2026​      ​104​    ​ ourse Introduction​
+                            C                                  ​.​                            ​ASSIGNMENT 01 announcement​
+        ​8.31​              ​Lecture 1 : Interaction​
+   ​2​ ​9.07​      ​414​    ​Workshop 1​                       ​ nreal 1 -​
+                                                               U                              ​ SSIGNMENT 01 Submission​
+                                                                                              A
+                                                               ​Building Environment​         ​by 12 Sep 11pm​
+   ​3​ ​9.14​      ​104​    ​ASSIGNMENT 01​                                                    ​MIDTERM announcement​
+                               ​presentation​
+   ​4​ ​9.21​      ​414​     ​Workshop 2​                      ​ nreal 2 - Implementing​
+                                                               U
+                                                               ​Interaction​
+   ​5​ ​9.28​      ​414​    ​ orkshop 3​
+                            W                                   ​Unreal 3 - Using Data​
+                            ​Tutorial 1​                         ​Midterm Concept Tutorial​
+   ​6​ ​10.05​ ​.​          개천절 대체 공휴일​
+                             ​                                    ​No Class​
+
+   ​7​ ​10.12​     ​420​    ​ id-term​
+                            M                                  ​Midterm Development​          ​MIDTERM Submission​
+                            ​Tutorial 2​                            ​Tutorial​                 ​by 18 October 11pm​
+   ​8​ ​10.19​     ​414​     ​MIDTERM presentation​             ​.​
+
+   ​9​ ​10.26​ ​104​        ​Workshop 4​                       ​Web 1: Creative Coding​       ​ inal project team building​
+                                                                                              F
+                                                                 ​(Canvas, Three.js)​         ​Web Assignment 1: Environment Setup​
+                                                                                                 ​& Clone code your favourite website​
+  ​10​ ​11.02​     ​104​    ​ inal Project Presentation 1​
+                            F                                  ​ inal Project Concept​
+                                                               F
+                            ​Tutorial 3​                       ​Presentation​
+   ​11​ ​11.09​    ​104​     ​Workshop 5​                       ​Web 2: Cross-Device​       ​ eb Assignment 2: Build Creative​
+                                                                                            W
+                                                                  ​Interaction (WebSocket)​   ​ oding Experience​
+                                                                                              C
+ ​12​ ​11.16​   ​104​   ​Workshop 6​                     ​Web 3: Integrating System​ ​Web Assignment 3: Build​
+                                                               ​(API, Three.js, Mobile,​  ​Mobile-to-Laptop Interactive​
+                                                                ​Unreal)​                  ​Experience​
+​13​ ​11.23​    ​420​   ​Tutorial 4​                      ​Final​ ​Project​ ​Development​
+                                                                 ​Tutorial​
+​14​ ​11.30​    ​104​   ​Final Project Presentation 2​     ​Work in Progress​
+                                                                  ​Presentation​
+​15​ ​12.07​    ​114​   ​Tutorial 5​                        ​FInal Setup Presentation​
+
+​16​ ​12.14​    ​114​   ​Final Group presentation /​     ​1st floor gallery space​     ​ inal material submission​
+                                                                                       F
+                                                                                       ​(Documentation, Techrider, etc)​
+                                                                                        ​by 22 April 10pm​
+
+
+
+
+​Course Assessment​
+   ​ ttendance + Class Participation: 15 %​
+   A
+   ​Midterm project outcome: 20 %​
+    ​Final project outcome: 40 %​
+     ​Presentations: 10 %​
+      ​Final project documentation material: 15 %​
+
+
+
+​Reading References​
+
+  ​●​ D            ​ onna Haraway,​​“A Manifesto for Cyborgs: Science, Technology, and Socialist Feminism in the​
+                   ​1980s,”​​Socialist Review 80 (1985): 65–108.​
+   ​●​ ​Gilles Deleuze and Félix Guattari,​​A Thousand Plateaus: Capitalism and Schizophrenia, trans.​
+                    ​Brian Massumi (Minneapolis: University of Minnesota Press, 1987).​
+    ​●​ ​Bruno Latour,​​Reassembling the Social: An Introduction to Actor-Network-Theory (Oxford:​
+                     ​Oxford University Press, 2005).​
+     ​●​ ​Timothy Morton,​​Hyperobjects: Philosophy and Ecology after the End of the World​
+                      ​(Minneapolis: University of Minnesota Press, 2013).​
+      ​●​ ​Benjamin H. Bratton,​​The Stack: On Software and Sovereignty (Cambridge, MA: MIT Press,​
+                       ​2015).​
+       ​●​ ​Donna Haraway,​​Staying with the Trouble: Making Kin in the Chthulucene​​(Durham: Duke​
+                        ​University Press, 2016).​
+        ​●​ ​Nicolas Bourriaud,​​The Exform (London: Verso, 2016).​
+         ​●​ ​James Bridle,​​New Dark Age: Technology and the End of the Future (London: Verso, 2018).​
+          ​●​ ​Jason W. Moore, ed.,​​Anthropocene or Capitalocene? Nature, History, and the Crisis of​
+                         ​Capitalism (Oakland: PM Press, 2016).​
+           ​●​ ​N. Katherine Hayles,​​Unthought: The Power of the Cognitive Nonconscious (Chicago: University​
+                          ​of Chicago Press, 2017).​
+            ​●​ ​Brian Christian,​​The Alignment Problem: Machine Learning and Human Values (New York: W. W.​
+                           ​Norton, 2020).​
+             ​●​ ​Nicolas Bourriaud,​​Inclusions: Aesthetics of the Capitalocene (Berlin: Sternberg Press, 2023).​
+              ​●​ ​Eliezer Yudkowsky and Nate Soares,​​If Anyone Builds It, Everyone Dies: Why Superhuman AI​
+                            ​Would Kill Us All (New York: Little, Brown and Company, 2025).​
+
+
+
+  ​​ B
+  ●     ​ loombert Art+Technoolgy​
+  ​●​ ​SIGGRAPH Art Gallery​
+   ​●​ ​Leonardo Journal (MIT press)​
+

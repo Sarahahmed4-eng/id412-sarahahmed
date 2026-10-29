@@ -1,0 +1,372 @@
+import { CapabilityChart } from "@/app/lecture-materials/components/capability-chart/capability-chart";
+import { ImageRow } from "@/app/lecture-materials/components/image-row/image-row";
+import { Term } from "@/app/lecture-materials/components/term/term";
+
+# Prelim. Web 1 전에
+
+ID412 Interactive Space — 강의 Yiyun Kang 교수, 조교 최정윤 (XD Lab)
+
+## 1. 조교 소개 [#1-about-ta]
+
+- [최정윤 Jeanyoon Choi](https://jeanyoon.ch/oi) | [XD Lab](https://www.xdlab.net)
+- 현재 KAIST 산업디자인학과 Experience Design Lab (XD Lab) 박사과정 (PhD Candidate)
+- 前 [Royal College of Art](https://www.rca.ac.uk) [Information Experience Design](https://www.rca.ac.uk/study/programme-finder/information-experience-design-ma/) 석사
+- 前 [서울대학교](https://www.snu.ac.kr) [산업공학과](https://ie.snu.ac.kr) 학사
+- 前 [한국예술종합학교](https://www.karts.ac.kr) (K-Arts) 디자인과 강사 (융합디자인 III, IV)
+- 엘리스 코딩 프론트엔드 웹 개발 부트캠프 강사
+- 연구 주제: 멀티디바이스 웹 아트워크
+- 질문이 있으면 메일: [jeanyoon.choi@kaist.ac.kr](mailto:jeanyoon.choi@kaist.ac.kr)
+
+## 2. 이 워크숍의 목표 [#2-key-objective-of-interactive-space-coding-session]
+
+AI 에이전트 기반의 크리에이티브 소프트웨어 엔지니어링. 인터랙티브 공간을 디자인하기 위한 것.
+
+여러분은
+
+1. 크리에이티브 코딩과 웹 개발에 [AI 에이전트](https://en.wikipedia.org/wiki/Agentic_AI)를 쓰는 법을 배우고
+2. a. [인터랙티브](https://en.wikipedia.org/wiki/Interactive_art)하고 b. [공간적인](https://en.wikipedia.org/wiki/Spatial_design) 경험을 만든다
+
+## 3. 왜 크리에이티브 웹 개발인가? [#3-why-creative-web-dev]
+
+**소프트웨어 엔지니어링의 현재**
+
+- 모델 성능은 선형으로 늘지 않는다. 두 배씩 는다.
+
+<CapabilityChart />
+
+- 이게 크리에이티브 소프트웨어 실천에 뜻하는 것
+  - 코드를 쓰는 게 더 이상 병목이 아니다. 뭘 원하는지 아는 게 병목이다
+  - **상상력이 가장 큰 병목이다.**
+  - '소프트웨어'는 비쌌다. 팀, 몇 달, 예산. 지금은 프롬프트 하나, 오후 한나절, 노트북 한 대
+  - 누구나 소프트웨어를 만들 수 있다. 모두가 만들 것이다
+
+<ImageRow
+  items={[
+    {
+      src: "/lecture-materials/prelim/walter-benjamin-1928.jpg",
+      alt: "발터 벤야민, 1928",
+      caption: "발터 벤야민, 1928년경",
+      href: "https://en.wikipedia.org/wiki/Walter_Benjamin",
+    },
+    {
+      src: "/lecture-materials/prelim/the-work-of-art.jpg",
+      alt: "기술복제시대의 예술작품, Penguin Great Ideas 판",
+      caption: "기술복제시대의 예술작품 (1935)",
+      href: "https://en.wikipedia.org/wiki/The_Work_of_Art_in_the_Age_of_Mechanical_Reproduction",
+    },
+  ]}
+/>
+
+- 이건 '사진'의 순간이다
+  - 발터 벤야민, [*기술복제시대의 예술작품*](https://en.wikipedia.org/wiki/The_Work_of_Art_in_the_Age_of_Mechanical_Reproduction) (1935)
+  - 사진 이전에는 이미지를 만들려면 몇 년의 훈련이 필요했다. 회화는 기술이었고, 그 기술이 관문이었다
+  - 사진은 이미지를 빠르게 복제 가능하게 만들었다. 손으로 만든 이미지의 '아우라'가 무너졌다
+  - 예술은 죽지 않았다. 회화는 '재현해야 한다'는 의무에서 풀려났다. 인상주의, 추상, 다다, 개념미술… 현대미술이 폭발한 것은 *바로* 이미지가 싸졌기 때문이다
+  - 이걸 주제로 작업을 하나 만들었다: [SoTA (State-of-the-Art)](https://www.xdlab.net/projects/sota)
+
+    <ImageRow
+      items={[
+        {
+          src: "/lecture-materials/prelim/sota-1.webp",
+          alt: "SoTA 설치 전경, 보라색 프로젝션",
+          caption: "SoTA (2024), 설치 전경",
+          href: "https://www.xdlab.net/projects/sota",
+        },
+        {
+          src: "/lecture-materials/prelim/sota-2.webp",
+          alt: "SoTA 설치 전경, 흰 선 프로젝션",
+          caption: "SoTA (2024), 설치 전경",
+          href: "https://www.xdlab.net/projects/sota",
+        },
+      ]}
+    />
+
+- 2020년대: 같은 일이 소프트웨어에 일어나고 있다
+  - AI가 소프트웨어를 빠르게 복제 가능하게 만들었다. '만드는' 기술이 더 이상 관문이 아니다
+  - 이건 소프트웨어를 쓰는 예술적 표현을 해방시킨다. '먼저 만들 줄 알아야 한다'는 제약이 사라졌다
+  - 소프트웨어 만들기가 이제 그림 그리기보다 쉽다. 아마 훨씬 쉽다
+  - 역설적으로, 그래서 소프트웨어를 이용한 예술적 실험이 폭발할 것이다. 싼 매체 → 거친 실험. 사진 → 현대미술과 똑같이
+- 굉장히 중요하고, 굉장히 흥미로운 시대
+  - 우리는 같은 규모의 또 다른 혁명을 목도하고 있다. 엄청난 가능성, 그리고 동시에 기존의 많은 관행이 사라질 것이다
+
+**단서: AI는 통계적 기계다**
+
+- AI는 평균으로 회귀한다. 언제나
+  - 모델은 통계적 기계다. 가장 그럴듯한 다음 것을 예측한다
+  - [확률적 앵무새 (Stochastic Parrot)](https://en.wikipedia.org/wiki/Stochastic_parrot) (Bender 외, 2021): 학습 데이터의 패턴을, 그럴듯하게, 의미 없이 반복한다
+  - 창작 과정을 통째로 맡기면 결과는 평균으로 수렴한다. '어디서 본 것 같은데', 전혀 새롭지 않은
+
+<ImageRow
+  items={[
+    {
+      src: "/lecture-materials/prelim/stochastic-parrots.png",
+      alt: "Digit Stochastic Parrots at Work, IceMing과 Digit의 일러스트",
+      caption: "IceMing & Digit, Stochastic Parrots at Work (Better Images of AI, CC BY 4.0)",
+      href: "https://en.wikipedia.org/wiki/Stochastic_parrot",
+    },
+  ]}
+  wide
+/>
+
+- 미술학원에서 그림을 제일 잘 그린다고 예술가가 되는 건 아니다. 여기도 같다
+  - AI가 좋은 소프트웨어를 만들어준다고 네가 창작자가 되는 건 아니다. 무한 소프트웨어의 시대에는 더욱
+- 이게 이 워크숍의 진짜 질문이다
+  - 창작 과정의 어디까지를 AI에 위임하고, 어디까지를 네가 쥘 것인가?
+  - 만드는 게 공짜일 때, 창작의 가치는 무엇인가?
+  - 정답은 없다. 각자의 스타일, 각자의 접근만 있다
+  - 이걸 여기서 배운다
+
+## 4. 어떤 프레임워크를 쓰나? [#4-which-frameworks-to-focus]
+
+키워드를 클릭하면 그게 뭔지, 이 워크숍에서 어떻게 쓰는지, 어디서 배우는지가 펼쳐진다.
+
+- 기초: <Term id="html" />, <Term id="css" />, <Term id="javascript" />
+- 언어: <Term id="typescript" /> (Javascript + 타입)
+- Javascript 프레임워크: <Term id="react" />
+- React 기반 풀스택 프레임워크: <Term id="nextjs" /> (App Router)
+- 스타일링: <Term id="cssModules" />
+- 패키지 매니저: <Term id="pnpm" />
+- 버전 관리: <Term id="git" />, <Term id="github" />
+- 배포: <Term id="vercel" />
+- 코드 에디터: <Term id="vscode" /> + <Term id="claudeCode" />
+
+심화 기술
+
+- W1 — 크리에이티브 코딩 입문: <Term id="canvas" />, <Term id="glsl" />, <Term id="threejs" />
+- W2 — 멀티디바이스 셋업 & 크로스디바이스 인터랙션: <Term id="socketio" />
+- W3 — 시스템 만들기: <Term id="api">API</Term>, 사운드 (<Term id="tonejs" />), <Term id="unreal" />
+
+웹으로 크리에이티브한 결과물을 만드는 데 정말 유용한 것들이다.
+
+**XD Lab 레퍼런스: 웹 기반 창작물**
+
+- Passage of Water (2023): Three.js (W1) + 데이터 시각화 + 비디오 (W1)
+  - 물로 보는 기후변화
+  - 스크롤 → NASA 위성 데이터가 3D 이야기가 된다
+  - https://www.xdlab.net/projects/passage-of-water
+  - http://goo.gle/passageofwater
+- SoTA (2024): 멀티디바이스 웹 아트워크 (Socket.io, W2) + GPT API (W3) + Three.js (W1)
+  - 커지는 AI, 누구를 위해?
+  - 폰 → 118개 신경망을 3D로 탐색. 떠나면 → 화면이 노이즈로 무너진다
+  - https://www.xdlab.net/projects/sota
+- Uncharted Territory (2024): 비디오 (W1) + Three.js (W1)
+  - 아무것도 안 하면, 지구는
+  - 지구를 돌리면 → 가뭄, 산불, 멸종
+  - https://www.xdlab.net/projects/uncharted-territory
+- Ω (2025): 멀티디바이스 웹 아트워크 (Socket.io, W2) + GPT API (W3)
+  - 너는 MBTI가 아니다
+  - 폰 → GPT 설문 → 내 유형이 큰 화면에. 흔들면 → 글리치, 내 카메라가 덮어쓴다
+  - https://www.xdlab.net/projects/omega
+- Banpo-Xism 반포자이즘 (2026): 멀티디바이스 웹 아트워크 (Socket.io, W2) + Three.js (W1)
+  - 한국 아파트, 지위의 신화
+  - 폰 → 피드를 스크롤하며 등급을 올린다. 더 높은 차원으로 → 큰 화면의 평면이 접힌다
+  - https://www.xdlab.net/projects/banpo-xism · live: https://banpo-xism.vercel.app/
+
+<ImageRow
+  items={[
+    { src: "/lecture-materials/prelim/xd-passage-of-water.webp", alt: "Passage of Water", caption: "Passage of Water (2023)", href: "https://www.xdlab.net/projects/passage-of-water" },
+    { src: "/lecture-materials/prelim/xd-sota.webp", alt: "SoTA", caption: "SoTA (2024)", href: "https://www.xdlab.net/projects/sota" },
+    { src: "/lecture-materials/prelim/xd-uncharted-territory.webp", alt: "Uncharted Territory", caption: "Uncharted Territory (2024)", href: "https://www.xdlab.net/projects/uncharted-territory" },
+    { src: "/lecture-materials/prelim/xd-omega.webp", alt: "Omega", caption: "Ω (2025)", href: "https://www.xdlab.net/projects/omega" },
+    { src: "/lecture-materials/prelim/xd-banpo-xism.webp", alt: "Banpo-Xism", caption: "Banpo-Xism (2026)", href: "https://banpo-xism.vercel.app/" },
+  ]}
+/>
+
+## 5. AI 에이전트 사용법 [#5-how-to-use-ai-agents]
+
+**모델 (2026년 10월 기준, API 가격은 100만 토큰당 입력 / 출력)**
+
+| 회사      | 모델              | 위치                                             | 가격          |
+| --------- | ----------------- | ------------------------------------------------ | ------------- |
+| OpenAI    | GPT-6 Astra       | 최상위. 복잡한 추론과 코딩                        | $10 / $50     |
+| OpenAI    | GPT-6.1 Sol       | 코딩·전문 작업에서 Astra에 근접, 더 저렴          | $2 / $10      |
+| OpenAI    | GPT-6 Luna        | 가장 빠르고 저렴. 대량의 단순 작업                | $0.10 / $0.50 |
+| Anthropic | Claude Fable 5.1  | 가장 똑똑함. 어려운 추론, 긴 에이전트 작업        | $10 / $50     |
+| Anthropic | Claude Opus 5.5   | 장시간 에이전트 코딩. 권장 기본값                 | $4 / $20      |
+| Anthropic | Claude Sonnet 5.5 | 속도와 지능의 균형                               | $2 / $10      |
+| Anthropic | Claude Haiku 5.5  | 가장 빠르고 저렴                                 | $0.10 / $0.50 |
+
+- 최상위 모델은 몇 달마다 바뀐다. 현재 라인업은 [OpenAI 모델](https://developers.openai.com/api/docs/models)과 [Claude 모델](https://platform.claude.com/docs/en/about-claude/models/overview)에서 확인
+- 이 워크숍에서 이 API를 직접 부르는 일은 (W3 전까지는) 없다. 코딩 에이전트를 통해 쓴다
+
+**코딩 에이전트**
+
+- 코딩 에이전트 = 모델 + 도구. 네 파일을 읽고, 고치고, 명령을 실행하고, 에러를 읽고, 다시 시도한다. 네가 설명하면 만들고, 네가 검토한다
+- 에이전트 = 모델 + 도구 + 루프. 모델이 다음 단계를 정하고, 도구가 실행하고(파일 읽기, 파일 고치기, `pnpm dev` 실행, 스크린샷), 결과가 모델로 돌아가고, 반복. 모든 단계가 네게 보이고 멈출 수 있다
+- 기억은 이 대화의 컨텍스트 윈도우다. 네 프로젝트에 대해 아는 건 이번 세션에 읽은 것, 그리고 `AGENTS.md`(아래)가 전부다
+- 권한: 명령을 실행하거나 프로젝트 밖 파일을 건드리기 전에 물어본다. 명령을 읽어라. 말이 되면 승인. "Allow all"은 나중에
+- [Codex](https://chatgpt.com/codex) (OpenAI): <Term id="cli">CLI</Term>, VS Code 확장, 클라우드. ChatGPT 요금제에 포함. GPT-6 Astra / GPT-6.1 Sol 사용
+- <Term id="claudeCode" /> (Anthropic): 터미널, VS Code 확장, 데스크톱 앱, 웹. Claude 구독 필요. Claude Opus 5.5 / Fable 5.1 사용
+- [Cursor AI](https://cursor.com/), [GitHub Copilot](https://github.com/features/copilot), [Gemini CLI](https://github.com/google-gemini/gemini-cli): AI 통합 에디터와 다른 CLI들. 같은 아이디어, 다른 회사
+- **우리는 VS Code + Claude Code**를 쓴다. 모델은 Claude Opus 5.5
+
+**기본 셋업: VS Code + Claude Code**
+
+1. <Term id="vscode" /> 설치: https://code.visualstudio.com/Download
+2. Claude Code (<Term id="cli">CLI</Term>) 설치. 터미널을 열고 실행
+   - macOS: `curl -fsSL https://claude.ai/install.sh | bash`
+   - Windows PowerShell: `irm https://claude.ai/install.ps1 | iex`
+   - 새 터미널을 열고 `claude --version` 입력. 버전 번호가 나오면 성공
+3. VS Code에 Claude Code 확장 설치
+   - 확장 탭 열기: `Cmd+Shift+X` (Mac) / `Ctrl+Shift+X` (Windows)
+   - "Claude Code" 검색 (제작: Anthropic) → Install
+   - 커맨드 팔레트 (`Cmd+Shift+P` / `Ctrl+Shift+P`)에서 "Claude Code" 입력 → **Open in New Tab**
+4. Chrome에 [Claude in Chrome](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) 확장 설치 (Brave, Edge, Arc도 됨). Claude Code와 같은 계정으로 로그인
+5. VS Code에서 프로젝트 폴더를 열고, 터미널을 열고 (`` Ctrl+` ``), `claude` 입력
+6. 수업용 계정으로 로그인 (아래)
+7. `/model` 입력 후 **Claude Opus 5.5** 선택
+8. `/chrome` 입력 후 **Enabled by default** 켜기. 상태에 "Extension: Installed"가 보여야 한다
+
+**수업용 계정 (공용)**
+
+- 워크숍에서 재학생용 Claude Max ($200/월) 계정을 **10/19부터 12/19까지** 무료로 제공한다
+- 로그인이 필요한 사람은 **10/21 수업 아침 9시 50분까지** 오면 직접 준다
+- <span className="danger">규칙. 하나라도 어기면 계정 사용 권한을 회수한다</span>
+  1. ID412 수업 용도로만 쓴다
+  2. 수업 외부의 계정이나 프로젝트에 쓰지 않는다
+  3. **Claude Fable 5.1 사용 금지. Claude Opus 5.5만 쓴다** (모델이 바뀌면 달라질 수 있음)
+  4. 사용량이 하나로 묶여 있다. 양심적으로, 필요한 만큼만, 아껴서 써라. 다 쓰면 모두가 못 쓴다
+  5. 로그인 정보를 수업 밖 사람과 공유하지 않는다. 계정 설정이나 비밀번호를 바꾸지 않는다
+  6. 프롬프트에 개인정보, 비밀번호, API 키를 넣지 않는다
+
+**에이전트와 일하는 법**
+
+- 원하는 걸 구체적으로 말해라. "App Router"라고 말하고, 어느 파일인지 말하고, 에러를 붙여넣어라
+- 믿기 전에 뭘 바꿨는지 읽어라: `git diff`. 버리려면 `git restore .`, 남기려면 `git commit`
+- 한 번에 한 가지. 작은 단계로, 매번 브라우저에서 확인
+- 레포의 `AGENTS.md`가 에이전트에게 이 프로젝트의 규칙을 알려준다. 자세한 건 W1에서
+
+**<Term id="harness">하네스</Term> 엔지니어링**
+
+- 모델은 모두에게 같다. *네 프로젝트에서* 에이전트를 잘 돌게 하는 건 모델 주변의 모든 것, **하네스**다
+- 하네스란: 처음에 읽는 규칙(<Term id="agentsMd" />), 안내받는 가이드(`docs/`), 남기고 가는 기억(실험마다 `README.md` 하나), 통과해야 하는 검사(`pnpm typecheck`, `pnpm build`, 브라우저에서 라우트 열기), 저장하는 체크포인트(되면 `git commit`)
+- 하네스가 없으면 에이전트는 추측한다: 엉뚱한 폴더, 시키지도 않은 Tailwind, 2023년의 Pages Router, 페이지를 열어보지도 않고 "됩니다". 있으면 매번 같은 일을 같은 방식으로 한다
+- 2026년 10월 현재: `AGENTS.md`가 회사를 가로지르는 표준이다 (Codex, Claude Code, Cursor, Gemini 전부 읽는다; [agents.md](https://agents.md/)). Next.js는 자기 블록을 거기에 써넣는다. 그 위에: 훅(수정할 때마다 타입체크), 스킬(재사용 절차), MCP(브라우저 같은 도구). 이제 프롬프트보다 하네스가 더 큰 레버다
+- 이 템플릿에는 하네스가 들어 있다. `AGENTS.md`와 `docs/`를 한 번 읽어라. 에이전트는 매 세션 읽는다. 같은 실수를 반복하면 프롬프트가 아니라 하네스를 고쳐라
+
+**브라우저 도구: Claude in Chrome**
+
+- 에이전트는 코드를 쓴다. 브라우저가 없으면 네 페이지를 볼 수 없다. 확장(셋업 4번과 8번)이 있으면 직접 Chrome을 연다: http://localhost:3000 로 가고, 스크린샷을 찍고, 콘솔 에러를 읽고, 클릭하고, 입력하고, 스크롤한다
+- 이게 루프를 닫는다: 고치기 → 라우트 열기 → 보기 → 콘솔 읽기 → 고치기 → 다시 보기. 없으면 에이전트는 "될 겁니다"라고 한다. 있으면 확인한다
+- 이렇게 시켜라: "localhost:3000/experiments/w1/time-interval 열고, 콘솔 에러 확인하고, 뭐가 보이는지 말해줘". 고친 다음엔: "페이지 열어서 원이 마우스를 따라오는지 확인해"
+- 눈에 보이는 Chrome 창에서 돈다. 클릭 하나하나 네가 본다. 로그인된 사이트도 보이니까, 신경 쓰이면 수업용 Chrome 프로필을 따로 만들어라
+- VS Code 채팅 패널에서는 `@browser`를 치면 브라우저를 넘긴다. 터미널에서는 `/chrome`이 상태를 보여주고, 끊기면 다시 연결한다
+- 문서: [Claude Code with Chrome](https://code.claude.com/docs/en/chrome)
+
+Chrome 셋업은 W1 1절에서 같이 한다.
+
+## 6. 일정과 과제 [#6-schedule--assignments]
+
+| 주차  | 날짜  | 내용                                                | 과제                                                        |
+| ----- | ----- | --------------------------------------------------- | ----------------------------------------------------------- |
+| Web 1 | 10/26 | 크리에이티브 코딩 (Canvas, GLSL, Three.js)          | 웹 과제 1: 크리에이티브 코딩 경험 만들기                     |
+| Web 2 | 11/2  | 크로스 디바이스 인터랙션 (WebSocket)                | 웹 과제 2: 모바일-노트북 인터랙티브 경험 만들기              |
+| Web 3 | 11/16 | 시스템 통합 (API, 사운드, 모바일, Unreal)           | —                                                            |
+
+기말: COACTIVITY — 인터랙티브 오디오비주얼 설치 (사운드 필수), Unreal 또는 Web, 1층 Black Room.
+
+**과제**
+
+- Web 1, Web 2 끝에 과제가 있다. **성적에 들어가지 않지만**, 학습에 꼭 필요하다. 해라
+- Web 1 전: 아래 튜토리얼 과제 (HTML/CSS/JS + React, 설치, 셀프 퀴즈)
+- 웹 과제 1: Web 2까지 (W1 끝 참고)
+- 웹 과제 2: Web 3까지 (W2 끝 참고)
+
+## 7. 수업 도구 [#7-class-tools]
+
+- VS Code + Claude Code (코드 에디터 + 코딩 에이전트)
+- localhost:3000 (네 로컬 서버)
+- 강의 노트 (이 사이트: https://id412.xdlab.net)
+- 실시간 코드 공유
+
+## 8. 참고 [#8-notes]
+
+- 개인별 디버깅은 도와줄 수 없다. LLM/Claude Code를 쓰거나 옆 사람에게 실시간으로 물어봐라.
+- 길을 잃었으면 옆 사람에게 꼭 물어봐라.
+- 경험이 있으면 옆 사람을 꼭 도와줘라.
+
+---
+
+## 튜토리얼 과제 [#tutorial-hw]
+
+안녕하세요,
+
+실라버스대로 10월 26일부터 크리에이티브 프론트엔드 웹 코딩 수업을 세 번 진행합니다.
+
+10월 26일 전에 아래 개념을 **완전히** 이해하고 와야 합니다:
+
+- HTML/CSS/Javascript (약 25시간 학습)
+- React.js 기초 (약 25시간 학습)
+
+그리고 아래를 설치해야 합니다
+
+- Node.js (LTS) + pnpm
+- Git
+- Visual Studio Code
+- Claude Code (<Term id="cli">CLI</Term> + VS Code 확장)
+- GitHub 계정 만들기
+
+상세 안내:
+
+**1. 설치**
+
+1. GitHub 계정 만들기: [LINK](https://github.com/)
+2. Node.js LTS 설치 (실행 환경): [LINK](https://nodejs.org/en/download)
+3. pnpm 설치 (패키지 매니저): [LINK](https://pnpm.io/installation)
+   1. Visual Studio Code 안에서 '터미널'을 연다.
+   2. `npm install --global pnpm` 입력.
+4. Git 설치: [LINK](https://git-scm.com/downloads)
+5. Visual Studio Code 설치 (코드 에디터): [LINK](https://code.visualstudio.com/Download)
+6. Claude Code 설치 (코딩 에이전트): [LINK](https://code.claude.com/docs/en/overview)
+   1. macOS 터미널: `curl -fsSL https://claude.ai/install.sh | bash`
+   2. Windows PowerShell: `irm https://claude.ai/install.ps1 | iex`
+   3. VS Code 확장 탭 (`Cmd+Shift+X` / `Ctrl+Shift+X`) → "Claude Code" 검색 → Install
+   4. 전체 셋업과 수업용 계정은 위 5절 참고
+
+영어 문서가 어려우면 아래 블로그가 도움이 될 수 있습니다:
+
+- Visual Studio Code 설치 ([KOR](https://velog.io/@deep-of-machine/VSCode-%EB%B9%84%EC%A3%BC%EC%96%BC-%EC%8A%A4%ED%8A%9C%EB%94%94%EC%98%A4-%EC%BD%94%EB%93%9C-%EC%84%A4%EC%B9%98-Visual-Studio-Code))
+- node.js와 npm 설치 ([KOR](https://velog.io/@me2designer/NPM-%EC%84%A4%EC%B9%98-%EB%B0%8F-%EC%84%A4%EC%A0%95))
+
+**2. 튜토리얼**
+
+이런 경험이 전혀 없는 완전 초보라고 가정하고, 프론트엔드 코딩을 스스로 익힐 수 있는 튜토리얼 링크를 드립니다. 이 중 하나라도 해본 적이 있거나 코딩 경험(Python/C++/Java 등)이 있으면, 검색해서 더 심화된 튜토리얼을 찾아도 됩니다.
+
+HTML/CSS/Javascript 튜토리얼
+
+- 한국어: 생활코딩
+  - HTML https://opentutorials.org/course/3084
+  - CSS https://opentutorials.org/course/3086
+  - Javascript https://opentutorials.org/course/3085
+- 영어:
+  - 옵션 1. The Odin Project: HTML/CSS/Javascript Foundations https://www.theodinproject.com/paths
+  - 옵션 2. Scrimba
+    - HTML/CSS: https://v2.scrimba.com/learn-html-and-css-c0p
+    - Javascript: https://v2.scrimba.com/learn-javascript-c0v
+
+React.js 튜토리얼
+
+- 한국어: 생활코딩
+  - React https://opentutorials.org/course/4900
+  - Next.js (App Router) https://opentutorials.org/course/5098
+- 영어
+  - 옵션 1. The Odin Project: Fullstack Javascript
+    - 시간이 없으면 'React'로 바로 건너뛰기
+    - 깊이 가고 싶으면 'React'까지 전부
+    - https://www.theodinproject.com/paths/full-stack-javascript
+  - 옵션 2. Scrimba
+    - React: https://v2.scrimba.com/learn-react-c0e
+
+공식 문서:
+
+- React 문서
+  - Quick Start: https://react.dev/learn
+  - 튜토리얼: Tic-Tac-Toe https://react.dev/learn/tutorial-tic-tac-toe
+- Next.js 문서
+  - App Router: https://nextjs.org/docs/app
+
+**3. 셀프 퀴즈**
+
+튜토리얼을 마쳤으면 아래 링크에서 HTML/CSS/JS와 React 이해도를 점검하는 셀프 퀴즈를 풀어보세요. 정답은 수업 하루 전에 공개합니다. 점수에 들어가지는 않지만 꼭 풀어보길 권합니다.
+
+셀프 퀴즈: [문제 (PDF)](https://drive.google.com/file/d/1Tw3e_GzArLRxXSqgeTReodUGQUcG4CKy/view) · [문제 폴더](https://drive.google.com/drive/folders/1QujcwH4G_ImbPX6vFVAqaGtlu4qAdoH2) · [정답](https://drive.google.com/drive/folders/12HHGjEbOjDLSFCZRasMr3FO0TjzTL7Zi)

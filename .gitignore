@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+.env*
+certificates/
+/docs/handoff.md
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
