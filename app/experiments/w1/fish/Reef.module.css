@@ -1,0 +1,91 @@
+/* A reef layer covers the bottom of the screen. Its transform (parallax, zoom) is set by page.tsx. */
+.layer {
+  position: absolute;
+  left: -40px;
+  right: -40px;
+  bottom: 0;
+  height: 100%;
+  transform-origin: 50% 100%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.far {
+  opacity: 0.75;
+}
+
+.ridge {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 26vh;
+}
+
+.mid {
+  opacity: 0.85;
+}
+
+.sand {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 7vh;
+}
+
+/* One coral or plant. Width follows from its height and viewBox. */
+.piece {
+  position: absolute;
+  width: auto;
+  overflow: visible;
+  transform-origin: 50% 100%;
+  animation: sway 9s ease-in-out infinite alternate;
+  transition: filter 0.8s ease;
+}
+
+/* Set by page.tsx while the fish is close. */
+.piece[data-lit] {
+  filter: brightness(1.2) saturate(1.25) drop-shadow(0 0 12px rgba(255, 240, 200, 0.8));
+}
+
+@keyframes sway {
+  from {
+    transform: rotate(-1.8deg) skewX(-2deg);
+  }
+  to {
+    transform: rotate(1.8deg) skewX(2deg);
+  }
+}
+
+/* Plant blades and anemone tentacles move a little more than the coral. */
+.blade,
+.tentacles {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: wave 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes wave {
+  from {
+    transform: rotate(-5deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
+}
+
+/* Narrow screens: fewer pieces, so the reef does not crowd the fish. */
+@media (max-width: 640px) {
+  .wide {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piece,
+  .blade,
+  .tentacles {
+    animation: none;
+  }
+}

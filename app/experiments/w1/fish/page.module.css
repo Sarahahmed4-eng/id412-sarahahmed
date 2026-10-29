@@ -2,91 +2,88 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
-  /* Pale aqua at the top, warm cream towards the sand. */
-  background: linear-gradient(to bottom, #d6ece8, #eef3e6 60%, #f5eedc);
+  /* Bright aqua at the surface, deeper turquoise towards the reef. */
+  background: linear-gradient(to bottom, #d2f6f0 0%, #8fdcd8 28%, #4cbcc4 62%, #3aa6b6 100%);
   /* No browser scrolling or zooming by touch; the page handles the input itself. */
   touch-action: none;
   overscroll-behavior: none;
   user-select: none;
 }
 
-/* Soft light from the surface. */
-.light {
+/* Sunlight from the surface: soft tilted beams that slowly breathe. */
+.rays {
   position: absolute;
-  inset: -20% -10% auto;
-  height: 70%;
-  background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.7), transparent 65%);
+  inset: 0;
   pointer-events: none;
+  mix-blend-mode: screen;
 }
 
-.bubble {
+.ray {
   position: absolute;
-  bottom: -20px;
-  border: 1.5px solid rgba(58, 127, 134, 0.35);
-  border-radius: 50%;
-  animation: rise linear infinite;
-  pointer-events: none;
+  top: -10%;
+  height: 110%;
+  transform-origin: 50% 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 252, 225, 0.55), transparent);
+  mask-image: linear-gradient(to bottom, black, transparent 80%);
+  animation: beam 9s ease-in-out infinite alternate;
 }
 
-@keyframes rise {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  50% {
-    transform: translate(12px, -55vh);
-  }
-  100% {
-    transform: translate(-6px, -110vh);
-    opacity: 0;
-  }
-}
-
-.floor {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 22vh;
-  pointer-events: none;
-}
-
-.weed {
-  fill: #5c9a8e;
-  opacity: 0.55;
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: sway 6s ease-in-out infinite alternate;
-}
-
-.weedSlow {
-  fill: #3f7f80;
-  animation-duration: 8s;
-}
-
-@keyframes sway {
+@keyframes beam {
   from {
-    transform: skewX(-6deg);
+    opacity: 0.35;
+    translate: -3vw 0;
   }
   to {
-    transform: skewX(6deg);
+    opacity: 0.9;
+    translate: 3vw 0;
   }
 }
 
-.sand {
-  fill: #ebdfc4;
+/* Moving light patterns: two grids of soft spots that drift past each other. */
+.caustics {
+  position: absolute;
+  inset: 0 0 35% 0;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: soft-light;
+  background-image:
+    radial-gradient(ellipse 40% 28% at 50% 50%, rgba(255, 255, 255, 0.9), transparent 70%),
+    radial-gradient(ellipse 30% 40% at 50% 50%, rgba(255, 255, 255, 0.7), transparent 70%);
+  background-size: 220px 150px, 310px 230px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+  animation: shimmer 24s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: 440px 150px, -310px 230px;
+  }
+}
+
+/* Blue-green mist over the far and middle reef. page.tsx sets its opacity from the fish size. */
+.haze {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(150, 220, 225, 0) 30%, rgba(120, 200, 212, 0.9));
+}
+
+/* The two particle canvases. Clicks pass through them; page.tsx checks bubbles itself. */
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 /* Positioned by the loop in page.tsx. This starting transform puts it in the middle before the first frame. */
 .fish {
   position: absolute;
   left: 0;
-  top: 50%;
+  top: 0;
   width: min(46vw, 460px);
-  transform: translate(calc(50vw - 50%), -50%);
+  transform: translate(calc(50vw - 50%), calc(50vh - 50%));
   will-change: transform;
 }
 
@@ -185,8 +182,17 @@
   font-size: 13px;
   font-style: italic;
   letter-spacing: 0.08em;
-  color: #3a6670;
-  opacity: 0.7;
-  white-space: nowrap;
+  color: #1d5560;
+  opacity: 0.8;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  text-align: center;
   pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ray,
+  .caustics {
+    animation: none;
+  }
 }
